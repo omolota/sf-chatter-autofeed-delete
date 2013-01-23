@@ -1,0 +1,259 @@
+<apex:page label="JStareAndCompareLead" name="JStareAndCompareLead" title="Stare And Compare" standardController="Lead"
+           showHeader="true" tabStyle="lead" extensions="jsSDO.JStareAndCompareLeadController">
+    <apex:form >
+        <apex:actionFunction action="{!doUpdate}" name="doUpdate" rerender="importstate">
+            <apex:param name="firstParam" assignTo="{!jupdate}" value="" />
+        </apex:actionFunction>
+    </apex:form>
+    
+    <apex:includeScript value="{!URLFOR($Resource.jsSDO__jquery, 'js/jquery-1.4.2.min.js')}"/>
+    <apex:stylesheet value="{!URLFOR($Resource.jsSDO__jquery, 'css/searchjdf2sfdc.css')}"/>
+         <style type="text/css">
+        table.cTable tr.cHeader td {
+            font-weight: bold;
+            font-size:14px;
+            padding-bottom: 10px;
+        }
+        table.cTable td.name {
+            font-weight: bold;
+        }
+        .cTable tbody td {
+            border-bottom:1px solid #DED7D7;
+            padding-bottom: 5px;
+            padding-top: 5px;
+        }
+        td.radio {
+            padding-top: 3px !important;
+        }
+        .different  {
+            background-color:#D9ECF9;
+            color:#333333;
+        }
+    </style>
+    <script type="text/javascript">
+        /*{!Lead.jsSDO__Jigsaw_Id__c}*/
+        var jData = {!json};
+        //var jData = {"zip": "183854-6930","phone": "+1.308.618.0255","title": "3Enterprise Accounts Coordinator","lname": "dreher","address": "1510 S Clearwater Loop Ste 201","email": "adreher1@jigsaw.com","company": "JJigsaw","state": "ID","fname": "AngelaA","country": "USA","city": "Post FallsA"};
+        var sUpatedDate = "<apex:outputText value="{0,date,yyyy-MM-dd HH:mm:ss z}"><apex:param value="{!Lead.LastModifiedDate}"/></apex:outputText>";
+        
+        $(document).ready(function() {
+            if (jData == null) {
+                $("#syncBtn").hide();
+                alert("Record can't be found.");
+                return;
+            }
+            var c = jData;
+            $("#fname").html(c.fname);
+            $("#lname").html(c.lname);
+            $("#company").html(c.company);
+            $("#title").html(c.title);
+            $("#email").html(c.email);
+            $("#address").html(c.address);
+            $("#phone").html(c.phone);
+            $("#city").html(c.city);
+            $("#country").html(c.country);
+            $("#state").html(c.state);
+            $("#zip").html(c.zip);
+            
+            /*Create radiobuttons*/
+            compareAndCreate(c.fname,"fname");
+            compareAndCreate(c.lname,"lname");
+            compareAndCreate(c.company,"company");
+        
+            compareAndCreate(c.title,"title");
+            compareAndCreate(c.email,"email");
+            compareAndCreate(c.address,"address");
+            compareAndCreate(c.phone,"phone");
+            compareAndCreate(c.city,"city");
+            compareAndCreate(c.country,"country");
+            compareAndCreate(c.state,"state");
+            compareAndCreate(c.zip,"zip");
+            
+            if (typeof c.updatedDate != 'undefined' ) {
+                var jDate = parseDate(c.updatedDate);
+                var sDate = parseDate(sUpatedDate);
+            
+                $("#jupdatedDate").text(jDate.toUTCString());
+                $("#supdatedDate").text(sDate.toUTCString());
+            }
+            
+            //3. if the records are identical, hide the 'Sync from Jigsaw' button and change the text of the 'cancel' button to 'Records are identical'
+            if ($(".updateJ").length == 0) {
+                $("#cancelBtn").hide();
+                $("#syncBtn").val("Records are identical");
+            } else {
+                if (typeof c.updatedDate != 'undefined' ) {
+                    var h = '<span style=\'color:#33CC33;\'> Fresher Data!</span>';
+                    if (jDate>sDate) {
+                        $("#jupdatedDate");
+                    } else {
+                        $("#supdatedDate"); 
+                    }
+                }
+            }
+            
+            //safari fix
+            $('.updateJ').attr('checked','checked');
+            
+        });
+        
+        function parseDate(str) {
+            /*var dateTime = str.split(' ');
+            var d = dateTime[0].split('-');
+            var t = dateTime[1].split(':');
+            return new Date(Date.UTC(d[0],d[1]-1,d[2],t[0], t[1], t[2]));*/
+            return new Date(str.replace(/-/g,'/'));
+        }
+        
+        var index = 0;
+        
+        function compareAndCreate(val1, idRb) {
+            var val2 = $.trim($("#s"+idRb).html());
+            var notEqual = false;
+            if (val1 != null && val2 != null) {
+                if (idRb == "employee" || idRb == "revenue" ) {
+                    notEqual = (parseInt(val1) != parseInt(val2)); 
+                } else {
+                    notEqual = ($.trim(val1.toLowerCase()) != $.trim(val2.toLowerCase()));
+                }
+            }
+            if (notEqual){
+                $('#jd'+idRb).append('<input type=\"radio\" checked=\"checked\" value=\"'+val1+'\" idx=\"'+index+'\" name=\"'+'d'+idRb+'\" class=\"updateJ\" />');
+                $('#sd'+idRb).append('<input type=\"radio\" value=\"false\" name=\"'+'d'+idRb+'\" />');
+                $('.c'+idRb).addClass('different');
+                
+            }
+            index++;    
+        }
+        function update() {
+            var update = ['null','null','null','null','null','null','null','null','null','null','null'];
+            $(".updateJ:checked").each(function(index) {
+                 update[$(this).attr('idx')] = this.value;
+            });
+            //alert(update.join("|CDATA|"));
+            $('.pbHeader').html('<img src="{!URLFOR($Resource.jsSDO__jquery, 'img/loading.gif')}"/>');
+            doUpdate(update.join("|CDATA|"));
+        }
+    </script>
+        <apex:outputText value="{!response}" id="importstate" escape="false"/>
+                <div class="columnRight">
+                    <div class="bPageTitle">
+                        <div class="ptBody spSecondaryPalette">
+                            <div class="content">
+                                <img title="Account" class="pageTitleIcon" alt="Account" src="/s.gif" style="background-position:0 -1166px"/>
+                                <h1>{!Lead.Name}<span class="titleSeparatingColon">:</span></h1>
+                                <h1 style="padding-top: 5px;">Clean Lead with Jigsaw</h1>
+                                <div class="blank"> </div>
+                            </div>
+                        </div>
+                    </div>
+                    <!--****************************-->
+                    <div id="jighsawSearchBlock" class="spbRelatedList">
+                            <div class="spBlock spSecondaryPalette"  style="border-top:3px solid #216DBD;">
+                                    <div class="pbHeader" style="text-align:center;">
+                                        
+                                      <input type="button" value="Update" title="Update" onclick="update()" name="sync" class="btn" id="syncBtn"/>
+                                      <input type="button" value="Cancel" title="Cancel" onclick="window.history.back();" name="cancel" class="btn" id="cancelBtn" />
+
+                                    </div>
+                                    <div class="pbBody">
+                                        <div class="dataTables_wrapper" id="searchResult_wrapper">
+                                        <table cellspacing="0" cellpadding="0" border="0" align="center" class="cTable">
+                                            <thead>
+                                                <tr class="cHeader">
+                                                    <td width="200"></td>
+                                                    <td width="30"></td>
+                                                    <td width="300">Jigsaw Has:<div id="jupdatedDate" style="font-size: 12px;"></div></td>
+                                                    <td width="30"></td>
+                                                    <td width="300">Salesforce Has:<div id="supdatedDate" style="font-size: 12px;"><apex:outputText value="{0,date,yyyy-MM-dd hh:mm:ss z}">
+                                                                                        <apex:param value="{!Lead.LastModifiedDate}" />
+                                                                                    </apex:outputText></div>
+                                                    </td>
+                                                </tr>
+                                            </thead>
+                                            <tbody>
+                                                <tr>
+                                                    <td class="name">First Name</td>
+                                                    <td id="jdfname" class="cfname radio"></td>
+                                                    <td id="fname" class="cfname"></td>
+                                                    <td id="sdfname" class="cfname radio"></td>
+                                                    <td id="sfname" class="cfname">{!Lead.FirstName}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Last Name</td>
+                                                    <td id="jdlname" class="clname"></td>
+                                                    <td id="lname" class="clname radio"></td>
+                                                    <td id="sdlname" class="clname radio"></td>
+                                                    <td id="slname" class="clname">{!Lead.LastName}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Company</td>
+                                                    <td id="jdcompany" class="ccompany radio"></td>
+                                                    <td id="company" class="ccompany"></td>
+                                                    <td id="sdcompany" class="ccompany radio"></td>
+                                                    <td id="scompany" class="ccompany">{!Lead.Company}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Title</td>
+                                                    <td id="jdtitle" class="ctitle radio"></td>
+                                                    <td id="title" class="ctitle"></td>
+                                                    <td id="sdtitle" class="ctitle radio"></td>
+                                                    <td id="stitle" class="ctitle">{!Lead.Title}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">E-mail Address</td>
+                                                    <td id="jdemail" class="cemail radio"></td>
+                                                    <td id="email" class="cemail"></td>
+                                                    <td id="sdemail" class="cemail radio"></td>
+                                                    <td id="semail" class="cemail">{!Lead.Email}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Phone</td>
+                                                    <td class="cphone radio" id="jdphone"></td>
+                                                    <td class="cphone" id="phone"></td>
+                                                    <td class="cphone radio" id="sdphone"></td>
+                                                    <td class="cphone" id="sphone">{!Lead.Phone}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Address</td>
+                                                    <td id="jdaddress" class="caddress"></td>
+                                                    <td id="address" class="caddress radio"></td>
+                                                    <td id="sdaddress" class="caddress radio"></td>
+                                                    <td id="saddress" class="caddress">{!Lead.Street}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">City</td>
+                                                    <td id="jdcity" class="ccity radio"></td>
+                                                    <td id="city" class="ccity"></td>
+                                                    <td id="sdcity" class="ccity radio"></td>
+                                                    <td id="scity" class="ccity">{!Lead.City}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">State</td>
+                                                    <td id="jdstate" class="cstate radio"></td>
+                                                    <td id="state" class="cstate"></td>
+                                                    <td id="sdstate" class="cstate radio"></td>
+                                                    <td id="sstate" class="cstate">{!Lead.State}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Zip</td>
+                                                    <td id="jdzip" class="czip radio"></td>
+                                                    <td id="zip" class="czip"></td>
+                                                    <td id="sdzip" class="czip radio"></td>
+                                                    <td id="szip" class="czip">{!Lead.PostalCode}</td>
+                                                </tr>
+                                                <tr>
+                                                    <td class="name">Country</td>
+                                                    <td id="jdcountry" class="ccountry radio"></td>
+                                                    <td id="country" class="ccountry"></td>
+                                                    <td id="sdcountry" class="ccountry radio"></td>
+                                                    <td id="scountry" class="ccountry">{!Lead.Country}</td>
+                                                </tr>
+                                            </tbody>
+                                        </table>
+                                        </div>
+                                    </div>
+                            </div>
+                    </div>
+               </div>
+</apex:page>

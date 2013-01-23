@@ -1,0 +1,3 @@
+<apex:page standardController="aorb__Option__c" extensions="aorb.viewOption" action="{!goToQuestion}">
+	<div style="display:none">{!aorb__Option__c.aorb__Question__c}</div>
+</apex:page>

@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObjectTranslation xmlns="http://soap.sforce.com/2006/04/metadata">
+    <caseValues>
+        <plural>false</plural>
+        <value>Page Facebook</value>
+    </caseValues>
+    <caseValues>
+        <plural>true</plural>
+        <value>Pages Facebook</value>
+    </caseValues>
+    <fields>
+        <label>Catégorie</label>
+        <name>Category__c</name>
+    </fields>
+    <fields>
+        <label>Description</label>
+        <name>Description__c</name>
+    </fields>
+    <fields>
+        <label>Image</label>
+        <name>Facebook_Image__c</name>
+    </fields>
+    <fields>
+        <label>ID Facebook</label>
+        <name>Fcbk_Id__c</name>
+    </fields>
+    <fields>
+        <label>Image</label>
+        <name>Image__c</name>
+    </fields>
+    <fields>
+        <label>Heure de début de la dernière recherche</label>
+        <name>Last_Time_Run__c</name>
+    </fields>
+    <fields>
+        <label>J&apos;aime</label>
+        <name>Likes__c</name>
+    </fields>
+    <fields>
+        <help><!-- When enabled, any Post by this Facebook page containing #ch will be automatically posted to the Chatter Feed of the Facebook Page creator. Comments on this post in Chatter will not be sent to Facebook. --></help>
+        <label>Publication avec #ch dans Chatter</label>
+        <name>Post_Hashtag_Chatter__c</name>
+    </fields>
+    <fields>
+        <label>Produits</label>
+        <name>Products__c</name>
+    </fields>
+    <fields>
+        <label>Exécuter la logique d&apos;association de requêtes</label>
+        <name>Run_Case_Association_Logic__c</name>
+    </fields>
+    <fields>
+        <label>Réception des publications et commentaires depuis</label>
+        <name>Search_Lower_Limit_Time__c</name>
+    </fields>
+    <fields>
+        <label>Réception des publications et commentaires jusqu&apos;à</label>
+        <name>Search_Upper_Limit_Time__c</name>
+    </fields>
+    <fields>
+        <label>Utilisateurs inconnus</label>
+        <name>Unknown_Users__c</name>
+        <picklistValues>
+            <masterLabel>Create Contact</masterLabel>
+            <translation><!-- Create Contact --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Create Lead</masterLabel>
+            <translation><!-- Create Lead --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Create Person Account</masterLabel>
+            <translation><!-- Create Person Account --></translation>
+        </picklistValues>
+        <picklistValues>
+            <masterLabel>Do Nothing</masterLabel>
+            <translation><!-- Do Nothing --></translation>
+        </picklistValues>
+    </fields>
+    <fields>
+        <label>Validé</label>
+        <name>Valid__c</name>
+    </fields>
+    <gender>Masculine</gender>
+    <layouts>
+        <layout>FCBK Page Layout</layout>
+        <sections>
+            <label><!-- Search Configuration --></label>
+            <section>Search Configuration</section>
+        </sections>
+    </layouts>
+    <nameFieldLabel>Nom</nameFieldLabel>
+    <startsWith>Consonant</startsWith>
+    <validationRules>
+        <errorMessage>La date Obtention des publications et commentaires jusqu&apos;au doit être postérieure à la date Obtention des publications et commentaires depuis</errorMessage>
+        <name>until_date_greater_than_since</name>
+    </validationRules>
+    <webLinks>
+        <label>Révoquer l&apos;accès à Facebook</label>
+        <name>Revoke_Facebook_Access</name>
+    </webLinks>
+    <webLinks>
+        <label><!-- Schedule_Facebook_Pages_Searches --></label>
+        <name>Schedule_Facebook_Pages_Searches</name>
+    </webLinks>
+    <webLinks>
+        <label>Valider</label>
+        <name>Validate</name>
+    </webLinks>
+</CustomObjectTranslation>

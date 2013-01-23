@@ -1,0 +1,39 @@
+<apex:page controller="aorb.QuestionListingHome">
+    <table width="100%" cellpadding="2" border="0">
+        <tr>
+            <td align="left">
+                <img src="{!$Resource.Logo}" />
+            </td>   
+        </tr>
+        <tr>
+            <td valign="top">AskYour.org is a fun social voting application for the enterprise. Votes are integrated directly into your Chatter feed increasing the number of people who engage in the action. We also limit your poll to two options upping the engagement by your users.</td>
+        </tr>
+        <tr>
+            <td>
+                <div>
+                    <a href="apex/EditQuestion?">Create a new poll</a></div>
+                <div>
+                    <a href="http://www.askyour.org" target="_blank">
+                        Link to instructions
+                    </a>
+                </div>
+            </td>
+        </tr>
+    </table>
+    <br />
+    <apex:pageBlock title="Active Polls">
+        <apex:pageBlockTable value="{!activeQuestions}" var="poll">
+            <apex:column headerValue="Name">
+                <a href="/{!poll.Id}">{!poll.Name}</a> 
+            </apex:column>
+            <apex:column headerValue="Link to Poll">
+                <a href="/apex/QuestionHome?id={!poll.Id}">Link</a>
+            </apex:column>
+            <apex:column value="{!poll.aorb__Total_Votes__c}" />
+            <apex:column value="{!poll.aorb__Can_users_see_votes_before_they_vote__c}" />
+            <apex:column value="{!poll.aorb__Voting_Closed__c}" />
+            <apex:column value="{!poll.aorb__Show_in_left_navigation__c}" />
+            
+        </apex:pageBlockTable> 
+    </apex:pageBlock> 
+</apex:page>

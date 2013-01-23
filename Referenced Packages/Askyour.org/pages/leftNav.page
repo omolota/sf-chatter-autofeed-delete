@@ -1,0 +1,43 @@
+<apex:page showHeader="false" sidebar="false" controller="aorb.leftNav">
+	<style>
+		body {
+			font-family: Arial, Helvetica, sans-serif;
+			font-size:12px;
+		}
+		.question {
+			margin-bottom:8px; 
+		}
+	</style>
+	<script type="text/javascript">
+
+		function loadPoll(pid) {
+		
+			parent.window.location = "/apex/QuestionHome?id=" + pid;
+		}
+		
+		function loadMain() {
+		
+			parent.window.location = "/apex/QuestionListingHome?sfdc.tabName=01rU0000000PvsP";
+		}  
+		 
+	</script>
+	<apex:repeat value="{!questionList}" var="question">
+		<table width="100%" border="0" cellpadding="2" cellspacing="0">
+			<tr>
+				<td valign="top" width="10px">
+					<img src="{!$Resource.poll}"  />
+				</td>	
+				<td valign="middle" align="left">
+					<a href="#" onClick="loadPoll('{!question.Id}');">{!question.Name}</a>
+				</td>			 				
+			</tr>	
+		</table>	
+	</apex:repeat>
+	<div>
+		{!message}
+	</div>
+	<br />
+	<div algin="center">
+		<a href="#" onClick="loadMain();">All polls and more...</a>
+	</div>
+</apex:page>

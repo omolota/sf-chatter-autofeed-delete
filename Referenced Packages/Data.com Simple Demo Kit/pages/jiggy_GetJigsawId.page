@@ -1,0 +1,2 @@
+<apex:page standardController="jsSDO__Jigsaw_Record__c" extensions="jsSDO.jiggy_GetJigsawIdController" action="{!getJigsawId}">
+</apex:page>

@@ -1,0 +1,25 @@
+<apex:page standardController="aorb__Question__c" extensions="aorb.viewQuestion">
+	<apex:form >
+		 <apex:detail subject="{!aorb__Question__c}" relatedList="false" title="true"/> 
+	</apex:form>
+	<apex:pageBlock title="Options" >
+		 <apex:pageBlockSection showHeader="false" columns="2">	
+		 	<apex:pageBlockSectionItem >
+				<strong>
+					{!$Label.Option_One}:
+				</strong>
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				<strong>
+					{!$Label.Option_Two}:
+				</strong>
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				{!OptionTwo.aorb__Option__c}
+			</apex:pageBlockSectionItem>
+			<apex:pageBlockSectionItem >
+				{!OptionOne.aorb__Option__c}
+			</apex:pageBlockSectionItem>
+		 </apex:pageBlockSection>
+	</apex:pageBlock>
+</apex:page>

@@ -1,0 +1,345 @@
+<apex:page controller="jsSDO.jiggy_DemoSetupController" id="thePage" name="Jigsaw Demo Setup" tabStyle="Jigsaw_Demo_Config__tab">
+
+    <apex:form id="panelForm">
+    <apex:pageBlock id="thePageBlock" title="Jigsaw Demo Setup">
+        <apex:pageBlockSection columns="1" id="mainSection">
+            
+            <apex:actionRegion id="actionRegion">
+    
+                <apex:tabPanel switchType="server" selectedTab="WizardTab" id="theTabPanel" activeTabClass="dr-tbpnl-tb-act" inactiveTabClass="inactiveTab" reRender="WizardTab">
+                    
+                    <apex:tab label="Data Setup Wizard" name="WizardTab" id="WizardTab">
+                    
+                        <apex:sectionHeader title="Setup Wizard"/>
+                        
+                        <table cellpadding="1" border="0" width="100%" align="center">
+                            <tbody valign="middle">
+                                <tr>
+                                    <td>
+                                        <p>
+                                        <apex:pageBlockSectionItem >
+                                            <apex:outputLabel value="Pick Demo Industry: " for="industry"></apex:outputLabel>
+                                            <apex:selectList id="industry" value="{!selectedIndustry}" multiselect="false" size="1" title="Demo Industry">
+                                                <apex:actionSupport event="onchange" action="{!getDemoAccounts}" focus="demoAccountsPanel" reRender="demoAccountsPanel,demoRecordsPanel" status="demoAccLoadStatus" />
+                                                    <apex:selectOptions id="industryOptions" value="{!demoIndustries}"></apex:selectOptions>
+                                            </apex:selectList>
+                                        </apex:pageBlockSectionItem>
+                                        </p>
+                                        <br/>
+                                        <p>
+                                        <apex:outputPanel id="loadingPanel" >
+                                        <apex:actionRegion id="loadingRegion">
+                                            
+                                            <div id="loading" style="display: none;text-align:center;">
+                                            <img src="{!$Resource.jsSDO__loading}"/>
+                                            </div>
+                                        
+                                        </apex:actionRegion>
+                                        </apex:outputPanel> 
+                                        
+                                        <apex:pageMessages id="msg" showDetail="true" escape="false"/>
+                                        
+                                        <br/>
+                                        <apex:outputPanel id="demoAccountsPanel">
+                                            <apex:actionRegion id="demoAccounts">
+                                            <apex:actionStatus id="demoAccLoadStatus" for="demoAccounts" startText="...loading..." stopText=""/>
+                                            <br/>
+                                                <apex:pageBlockTable align="center" border="0" cellpadding="1" rendered="{!hasDemoAccts}" id="demoAcctsTable" value="{!demoAccts}" var="acct">
+                                                    <apex:column headerValue="Select Account">
+                                                        <apex:commandButton action="{!getDemoRecords}" id="selectButton" value="Select" reRender="demoRecordsPanel" status="demoRecordsLoadStatus">
+                                                        <apex:param id="selectedAcct" name="selectedAcct" value="{!acct.jsSDO__Jigsaw_Id__c}" assignTo="{!selectedAcct}"/>
+                                                        </apex:commandButton>
+                                                        <apex:pageBlock rendered="false" id="hiddenTable1"></apex:pageBlock>
+                                                    </apex:column>
+                                                    <apex:column headerValue="Demo Company Name">
+                                                        <apex:outputLink target="/{!acct.Id}" value="/{!acct.Id}">
+                                                            {!acct.Name}
+                                                        </apex:outputLink>
+                                                    </apex:column>
+                                                    <apex:column value="{!acct.jsSDO__Record_Description_Account__c}" headerValue="Experience Desc"/>
+                                                    <apex:column value="{!acct.jsSDO__Jigsaw_Id__c}" headerValue="Demo Jigsaw Id"/>
+                                                </apex:pageBlockTable>
+                                                
+                                            </apex:actionRegion>
+                                        </apex:outputPanel>
+                                        </p>
+                                        <br/>
+                                        <p>
+                                        <apex:outputPanel id="demoRecordsPanel">
+                                            <apex:actionRegion id="demoRecords">
+                                            <apex:actionStatus id="demoRecordsLoadStatus" for="demoRecords" startText="...loading..." stopText=""/>
+                                            <br/>
+                                                <apex:pageBlockTable id="demoContactsTable" rendered="{!hasDemoRecords}" align="center" border="0" cellpadding="1" value="{!demoContacts}" var="con">
+                                                    <apex:column headerValue="Select Contacts for Demo">
+                                                        <apex:inputCheckbox value="{!con.jsSDO__Is_Demo_Enabled__c}" disabled="false"/>
+                                                    </apex:column>
+                                                    <apex:column headerValue="Record Type" value="{!con.RecordType.Name}"/>
+                                                    <apex:column headerValue="Demo Contact Name">
+                                                        <apex:outputLink value="/{!con.Id}" target="/{!con.Id}">
+                                                            {!con.Name}
+                                                        </apex:outputLink>
+                                                    </apex:column>
+                                                    <apex:column headerValue="Experience Desc">
+                                                        <apex:outputText rendered="{!(con.RecordType.Name = 'Contact')}">
+                                                        {!con.jsSDO__Record_Description_Contact__c}
+                                                        </apex:outputText>
+                                                        <apex:outputText rendered="{!(con.RecordType.Name = 'Lead')}">
+                                                        {!con.jsSDO__Record_Description_Lead__c}
+                                                        </apex:outputText>
+                                                    </apex:column>
+                                                </apex:pageBlockTable>
+                                            </apex:actionRegion>
+                                        </apex:outputPanel>
+                                        </p>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td align="center">
+                                        <p>
+										<apex:commandButton value="Save" onclick="showLoading()" action="{!saveDataSetup}"/>
+										</p>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    
+                    </apex:tab>
+                    
+                    <apex:tab label="Manage Chatter" name="ManageChatter" id="ManageChatter">
+                            <apex:outputPanel title="Set Chatter Management for Demo Records:" style="float:center" >
+                                    <p><apex:outputText style="font-size:14px;color:green;" value="*** More features coming soon! ***"></apex:outputText></p>
+                            
+                                    <p><apex:outputText style="font-size:14px;font-family: sans-serif;font-weight: bold;text-align: justify;" value="Enabled Demo Accounts: "/></p>
+                                    <apex:pageBlockTable id="cAccountsTable" var="acc" value="{!chatterAccounts}">
+                                    </apex:pageBlockTable>
+                                    <p><apex:outputText style="font-size:14px;font-family: sans-serif;font-weight: bold;text-align: justify;" value="Enabled Demo Contacts: "/></p>
+                                    <apex:pageBlockTable id="cContactsTable" var="con" value="{!chatterContacts}">
+                                    </apex:pageBlockTable>
+                                    <p><apex:outputText style="font-size:14px;font-family: sans-serif;font-weight: bold;text-align: justify;" value="Enabled Demo Leads: "/></p>
+                                    <apex:pageBlockTable id="cLeadsTable" var="lead" value="{!chatterLeads}">
+                                    </apex:pageBlockTable>
+                            </apex:outputPanel>
+                        
+                    </apex:tab>
+                    
+                    <apex:tab label="Demo Reset" name="DemoReset" id="DemoReset">
+                       <apex:sectionHeader title="Demo Reset"/>
+                            <apex:pageBlock >
+                                <apex:pageBlockSection >
+                                    <apex:outputPanel style="float:left;height:500px;width:250px;">
+                                        <p>1) <apex:commandButton action="{!reset}" value="Reset Demo" id="resetButton" onclick="showLoading()"/></p>
+                                        <p>2) <apex:commandButton action="{!setupChatter}" value="Reset Chatter" id="setupChatterButton" onclick="showLoading()"/></p>
+                                    </apex:outputPanel>
+                                    <apex:outputPanel id="resultsPanel" style="float:right;height:500px;width:500px;">
+                                        <h2>Results:</h2>
+                                        <apex:actionRegion id="loadingRegion">
+                                        <apex:outputPanel id="loadingPanel">
+                                            <div id="loading" style="display: none;text-align:center;">
+                                            <img src="{!$Resource.jsSDO__loading}"/>
+                                            </div>
+                                        </apex:outputPanel>
+                                        </apex:actionRegion>                                         
+                                        <p><apex:pageMessages id="msg" escape="false" showDetail="true"/></p>
+                                        <!--<p style="font-family:courier;"><apex:outputText escape="false" style="font-size:14" value="{!result}"/></p>-->
+                                    </apex:outputPanel>
+                                </apex:pageBlockSection>
+                            </apex:pageBlock>
+                    </apex:tab>
+                    
+                </apex:tabPanel>
+                
+            </apex:actionRegion>
+            </apex:pageBlockSection>
+        </apex:pageBlock>
+    </apex:form>
+
+	<script type="text/javascript">
+        function showLoading() {
+            document.getElementById("loading").style.display = "block";
+        }
+    </script>
+    
+<style type="text/css">
+
+    .activeTab {background-color: #8A480F; color:white; background-image:none; font-size:11px;}
+    .inactiveTab { background-color: lightgrey; color:black; background-image:none; font-size:11px; font-style:default; font-color:lightgrey;}
+    
+    .dr-tbpnl-tb-inact {
+    background-color:#1797C0;
+    background-image:url("");
+    background-position:center top;
+    background-repeat:repeat-x;
+    border-color:#FFFFFF;
+    border-style:solid;
+    border-width:1px 1px 0;
+    color:white;
+    cursor:default;
+    font-weight:bold;
+    font-size:11px;
+    min-height:18px;
+    height:19px;
+    }
+    
+    .dr-tbpnl-tb-act {
+    background-color:#D4EBF2;
+    background-image:url("/img/alohaSkin/tabs_sprite.png");
+    font-weight:bold;
+    font-size:12px;
+    height:20px;
+    } 
+    
+    .dr-tbpnl-tb-sel {
+    background-color:#D4EBF2;
+    background-image:url("/img/alohaSkin/tabs_sprite.png");
+    font-weight:bold;
+    color:black;
+    height:19px;
+    }
+        
+     .dr-tbpnl-cntnt {
+    background:url(https://na1.salesforce.com/img/alohaSkin/feeds/feedbg.png)repeat-x 0 0;
+    border-bottom-color:#C0C0C0;
+    border-left-color:#C0C0C0;
+    border-right-color:#C0C0C0;
+    color:#000000;
+    font-family:Arial,Verdana,sans-serif;
+    font-size:12px;
+    height:240px;
+    }  
+    
+    #theTabPanel{
+    width:998px;
+    
+    }
+    
+    .caseDescript{
+    height:85px;
+    
+    }
+    
+    .wide{
+    width:200px;
+    }
+    
+    .superWide{
+    width:500px;
+    height:300px;
+    }
+    
+    #theWarning{
+    color:white;
+    float:right;
+    font-size:120%;
+    font-weight:bold;
+    height:290px;
+    margin-right:100px;
+    margin-top:-306px;
+    position:relative;
+    width:300px;
+    z-index:2;
+    
+    }
+    
+    .tranparentTable {
+    background-color:transparent;
+    border-color:-moz-use-text-color #EAEAEA #EAEAEA;
+    border-style:none none none;
+    border-width:0 0 0;
+    }
+    
+    .myPanelGridCol {
+        vertical-align:middle;
+    }
+    
+    .outputFont {
+        font-family: sans-serif;
+        font-style: normal;
+        font-variant: normal;
+        font-weight: bold;
+        font-size: large;
+        line-height: 100%;
+        word-spacing: normal;
+        letter-spacing: normal;
+        text-decoration: none;
+        text-transform: none;
+        text-align: justify;
+        text-indent: 0ex;
+    }
+    
+    .bPageHeader .phHeader,
+    .tabsNewBar {
+      width:100%;
+      border: 0;
+      margin: 0;
+      padding: 0;
+    }
+    table.tabsNewBar tr.newBar {
+      display:none;
+    }
+    
+    .tabNavigation {
+        padding-bottom:10px;
+        padding-left: 10px;
+        margin-bottom:6px;
+        font-size: 91%;
+        font-family: 'Verdana', 'Geneva', sans-serif;
+    }
+    table.tab {
+        line-height:normal;
+    }
+    .tab td {
+        text-align:center;
+        background-image: url(/img/tab/left.gif);
+        background-position: left top;
+        background-repeat: no-repeat;
+        margin:0;
+        padding:0 0 0 6px;
+        border-bottom:1px solid #A4A29E;
+    }
+    .tab a {
+        text-decoration:none;
+        color:#444;
+    }
+    .tab div {
+        background-image: url(/img/tab/right.gif);
+        background-position: right top;
+        background-repeat: no-repeat;
+        padding:3px 9px 5px 3px;
+    }
+    .tab a:hover {
+        text-decoration:underline;
+    }
+    .tab td.currentTab {
+        font-weight:bold;
+        background-color: transparent;
+    }
+    .currentTab,
+    .currentTab a {
+        color: #FFF;
+    }
+    
+    .currentTab div {
+        padding:4px 9px 4px 3px;
+    }
+    .tab .last div {
+        background-image: url(/img/tab/last.gif);
+        background-position: right top;
+    }
+    
+    .tabNavigation,
+    .blank .tabNavigation {
+        background-image:url(/img/tab/blank_bg.gif);
+        background-repeat: repeat-x;
+        background-position: bottom;
+    }
+    
+    .allTabsArrow { background-image: url(/img/tab/arrow.gif);
+        background-position: 0px 0px;width:6px;
+        height:9px; }
+    
+    .allTabTab .currentTab .allTabsArrow { background-image: url(/img/tab/arrowWhite.gif);
+        background-position: 0px 0px;width:6px;
+        height:9px; }
+    
+</style>
+</apex:page>

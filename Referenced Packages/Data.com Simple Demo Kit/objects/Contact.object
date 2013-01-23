@@ -1,0 +1,283 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fields>
+        <fullName>Automatic_Updates_Disabled__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Locked</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Automatic_Updates__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(Automatic_Updates_Disabled__c, &quot;Locked&quot;, &quot;Unlocked&quot;)</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Jigsaw administrators can enable auto-clean to update your CRM records. Click Lock or Unlock to lock or unlock your CRM records. Jigsaw&apos;s auto-clean function can NOT modify a Locked record. Jigsaw&apos;s auto-clean function can modify an Unlocked record.</inlineHelpText>
+        <label>Update Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>CRM_Last_Modified__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw CRM Last Modified</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Duplicate_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Duplicate Id</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Duplicate__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF (LEN (Duplicate_Id__c )=0,&quot;None Found&quot;, (IMAGE(&quot;/resource/jsSDO____duplicate&quot;, &quot;D&quot;)) +  &quot; &quot; + HYPERLINK(&quot;/apex/jsSDO__jigsawContactDuplicates?id=&quot; + Duplicate_Id__c, &quot;Duplicates Found&quot;, &quot;_blank&quot;))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <inlineHelpText>Jigsaw checks your CRM data to find duplicate records. When duplicate records are found, a link is provided so that you can view the duplicate records. &quot;None Found&quot; is displayed if no duplicates were identified.</inlineHelpText>
+        <label>Duplicate</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Fresher__c</fullName>
+        <defaultValue>&quot;N&quot;</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Fresher</label>
+        <length>1</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Graveyard__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Graveyard</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Created_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Created Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Id__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>true</externalId>
+        <label>Jigsaw Id</label>
+        <length>100</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Last_Modified_Date__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Last Modified Date</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Last_Sync_Locked__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>Last_Sync__c</formula>
+        <inlineHelpText>This field shows you the last time that Jigsaw&apos;s auto-clean process checked your CRM record against the Jigsaw database.</inlineHelpText>
+        <label>Last Checked</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Managed_Backend__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( 
+OR( 
+( Sync_Status__c = &quot;I&quot; ), 
+( Sync_Status__c = &quot;O&quot;) 
+), 
+1,0 
+)</formula>
+        <label>Jigsaw Managed Backend</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Managed__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(
+      OR( ( Sync_Status__c = &quot;I&quot; ) , ( Sync_Status__c = &quot;O&quot; ) ),&quot;Managed&quot; , &quot;Unmanaged&quot; )</formula>
+        <label>Jigsaw Managed</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Sourced__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF( ISPICKVAL( LeadSource , &quot;Jigsaw&quot; ) , 1 , 0 )</formula>
+        <label>Jigsaw Sourced</label>
+        <precision>18</precision>
+        <required>false</required>
+        <scale>0</scale>
+        <trackHistory>false</trackHistory>
+        <type>Number</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Jigsaw_Sync_Activity__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Sync Activity</label>
+        <picklist>
+            <picklistValues>
+                <fullName>Added</fullName>
+                <default>false</default>
+            </picklistValues>
+            <picklistValues>
+                <fullName>Updated</fullName>
+                <default>false</default>
+            </picklistValues>
+            <sorted>false</sorted>
+        </picklist>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Picklist</type>
+    </fields>
+    <fields>
+        <fullName>Last_Sync__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Last Checked Backend</label>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>DateTime</type>
+    </fields>
+    <fields>
+        <fullName>Silent_Update__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Silent Update</label>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <fields>
+        <fullName>Sync_Status_Indicator__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(Graveyard__c, (IMAGE(&quot;/resource/jsSDO__graveyard&quot;, &quot;G&quot;)) + &quot; Inactive&quot;, 
+IF(AND (!Graveyard__c, 
+CONTAINS (Sync_Status__c, &quot;I&quot; )), 
+(IMAGE(&quot;/resource/jsSDO__insync&quot;, &quot;I&quot;)) + &quot; Matching&quot;, 
+IF(AND (!Graveyard__c, 
+CONTAINS (Sync_Status__c, &quot;O&quot; ), 
+CONTAINS (Fresher__c, &quot;J&quot;)), 
+(IMAGE(&quot;/resource/jsSDO__outofsync&quot;, &quot;O&quot;)) + &quot; Different -&quot; + HYPERLINK( &quot;/apex/jsSDO__JStareAndCompareContact?scontrolCaching=1&amp;id=&quot; &amp; Id,&quot; Jigsaw Fresher&quot;,&quot;_parent&quot;), 
+IF(AND (!Graveyard__c, 
+CONTAINS (Sync_Status__c, &quot;O&quot; ), 
+CONTAINS (Fresher__c, &quot;C&quot;)), 
+(IMAGE(&quot;/resource/jsSDO__outofsync&quot;, &quot;O&quot;)) + &quot;Different -&quot; + HYPERLINK( &quot;/apex/jsSDO__JStareAndCompareContact?scontrolCaching=1&amp;id=&quot; &amp; Id, &quot; Salesforce Fresher&quot;,&quot;_parent&quot;), 
+IF(AND (!Graveyard__c, 
+CONTAINS (Sync_Status__c, &quot;U&quot; )), 
+(IMAGE(&quot;/resource/jsSDO__unmatched&quot;, &quot;U&quot;)) + &quot; Not Found&quot;, 
+(IMAGE(&quot;/resource/jsSDO__unmatched&quot;, &quot;U&quot;)) + &quot; Not Found&quot;)))))</formula>
+        <inlineHelpText>Matching -A Jigsaw managed record exactly matches your CRM record; Different -A Jigsaw managed record partially matches your CRM record; In Graveyard -A CRM record matches a Jigsaw record containing invalid data; Not Found -No matching record was found</inlineHelpText>
+        <label>Jigsaw Status</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sync_Status_Summary__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <formula>IF(Graveyard__c, &quot;Graveyard&quot;,
+IF(AND (!Graveyard__c,  
+CONTAINS (Sync_Status__c, &quot;I&quot; )),
+&quot;Matching&quot;,
+IF(AND (!Graveyard__c,  
+CONTAINS (Sync_Status__c, &quot;O&quot; )),
+&quot;Different&quot;,
+IF(AND (!Graveyard__c,  
+CONTAINS (Sync_Status__c, &quot;U&quot; )),
+&quot;Not Found&quot;,
+&quot;Not Found&quot;))))</formula>
+        <formulaTreatBlanksAs>BlankAsZero</formulaTreatBlanksAs>
+        <label>Jigsaw Update Status Summary</label>
+        <required>false</required>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <fields>
+        <fullName>Sync_Status__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <label>Jigsaw Update Status Backend</label>
+        <length>1</length>
+        <required>false</required>
+        <trackFeedHistory>false</trackFeedHistory>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+        <unique>false</unique>
+    </fields>
+    <webLinks>
+        <fullName>Clean_with_Jigsaw</fullName>
+        <availability>online</availability>
+        <displayType>button</displayType>
+        <height>600</height>
+        <linkType>page</linkType>
+        <masterLabel>Clean with Jigsaw</masterLabel>
+        <openType>noSidebar</openType>
+        <page>JStareAndCompareContact</page>
+        <protected>false</protected>
+    </webLinks>
+</CustomObject>

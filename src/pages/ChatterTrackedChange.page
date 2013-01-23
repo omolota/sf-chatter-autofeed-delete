@@ -1,0 +1,169 @@
+<apex:page controller="ChatterTrackedChange">
+    <style>
+        #main{
+            border: 2px solid gray;
+            border-radius: 10px;
+            padding: 20px 5%;
+        }
+        #main h1{
+            font-size: 18px;
+        }
+        .header span.allButton{
+            float: right;
+            margin-right: 10px;
+        }
+
+        .left{
+            float: left;                
+        }
+        .right{
+            float: right;
+        }
+        #main .objectsList{
+            width: 45%;
+            border: 1px solid gray;
+            border-radius: 10px;
+            padding: 10px 0 10px 10px;
+        }
+        
+        .objectDiv{
+            cursor: pointer;
+            border-radius: 5px;
+            border: 1px solid gray;
+            padding: 10px 2%;
+            width: 18%;
+            min-height: 30px;
+            margin-bottom: 10px;
+            margin-right: 2%;
+        }
+        .objectDiv a{
+            color: rgba(100, 100, 100, 1);      
+            text-decoration: none;
+            -webkit-transition: all 0.5s ease-in-out;
+            -moz-transition: all 0.5s ease-in-out;
+            -o-transition: all 0.5s ease-in-out;
+            -ms-transition: all 0.5s ease-in-out;
+            transition: all 0.5s ease-in-out;
+        }
+        .deletedColor{
+            -webkit-box-shadow: 1px 1px 1px #AAA;
+            -moz-box-shadow: 1px 1px 1px #aaa;
+            box-shadow: 1px 1px 1px #AAA;
+            background: #eeeeee; /* Old browsers */
+            background: -moz-linear-gradient(top,  #eeeeee 0%, #cccccc 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#cccccc)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #eeeeee 0%,#cccccc 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-9 */            
+            border: inset 1px #FFF;        
+        }
+        .deletedColor:hover{
+            background: #f9fcf7; /* Old browsers */
+            background: -moz-linear-gradient(top,  #f9fcf7 0%, #f5f9f0 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f9fcf7), color-stop(100%,#f5f9f0)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #f9fcf7 0%,#f5f9f0 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #f9fcf7 0%,#f5f9f0 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #f9fcf7 0%,#f5f9f0 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #f9fcf7 0%,#f5f9f0 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9fcf7', endColorstr='#f5f9f0',GradientType=0 ); /* IE6-9 */                                    
+        }
+        .undeletedColor{
+            background: #f9fcf7; /* Old browsers */
+            background: -moz-linear-gradient(top,  #f9fcf7 0%, #f5f9f0 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#f9fcf7), color-stop(100%,#f5f9f0)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #f9fcf7 0%,#f5f9f0 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #f9fcf7 0%,#f5f9f0 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #f9fcf7 0%,#f5f9f0 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #f9fcf7 0%,#f5f9f0 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#f9fcf7', endColorstr='#f5f9f0',GradientType=0 ); /* IE6-9 */                            
+            border: solid 1px #444;            
+        }
+        .undeletedColor:hover{
+            -webkit-box-shadow: 1px 1px 1px #AAA;
+            -moz-box-shadow: 1px 1px 1px #aaa;
+            box-shadow: 1px 1px 1px #AAA;
+            background: #eeeeee; /* Old browsers */
+            background: -moz-linear-gradient(top,  #eeeeee 0%, #cccccc 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#eeeeee), color-stop(100%,#cccccc)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #eeeeee 0%,#cccccc 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #eeeeee 0%,#cccccc 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#eeeeee', endColorstr='#cccccc',GradientType=0 ); /* IE6-9 */            
+            border: inset 1px #FFF;                
+        }
+        .clear{
+            clear: both;
+        }
+        .header{
+            margin-bottom: 20px;
+        }
+        .deleteResults{
+            margin-top: 20px;        
+        }
+        .bold{
+            font-weight: bold;
+        }
+        .deleteResultObj{
+            float: left; 
+            margin: 5px;
+            padding: 5px;
+            border-radius: 5px;
+        }
+    </style>
+    
+    <div id="main">
+        <h1>Delete Chatter Tracked Changes</h1> <br /><br />
+        <apex:form >
+            <div class="objectsList left">
+                <div class="header">
+                    Click on the object of the tracked change to delete.
+                    <span class="allButton"><apex:commandButton reRender="objOrigPanel, objDeletePanel" value="Move all to delete list" action="{!deleteAllFeedTrack}" /></span>
+                </div>
+                <apex:outputPanel id="objOrigPanel" layout="block" style="margin-top: 40px;">
+                    <apex:repeat value="{!objList}" var="list">
+                            <apex:commandLink reRender="objOrigPanel, objDeletePanel" action="{!addToObjectsToDelete}">
+                                <apex:param assignTo="{!chosenObject}" name="objToDel" value="{!list.objName}" />
+                                <span class="objectDiv left undeletedColor">{!list.name}</span>
+                            </apex:commandLink>
+                    </apex:repeat>        
+                </apex:outputPanel>
+            </div>
+
+            <div class="objectsList right">
+                <div class="header">
+                    Object Tracked Changes to delete: 
+                    <span class="allButton"><apex:commandButton reRender="objOrigPanel, objDeletePanel" value="Cancel all" action="{!cancelAllFeedTrack}" /></span>                
+                </div>
+                    <apex:outputPanel id="objDeletePanel">
+                            <apex:repeat value="{!objectsToDelete}" var="list">
+                                <apex:commandLink reRender="objOrigPanel, objDeletePanel" action="{!removeFromObjectsToDelete}">
+                                    <apex:param assignTo="{!chosenObject}" name="objToRet" value="{!list.objName}" />
+                                    <span class="objectDiv left deletedColor">{!list.name}</span>
+                                </apex:commandLink>
+                            </apex:repeat>
+                            <div class="clear"></div>
+                            <div><apex:commandButton reRender="objOrigPanel, objDeletePanel, deleteResults" value="Delete" action="{!deleteFeedTrack}" style="height: 30px; width: 115px; margin-top: 20px;" rendered="{!if(objectsToDelete.size==0, false, true)}"/></div>
+                    </apex:outputPanel>
+            </div>
+            <div class="clear"></div>
+
+            <apex:outputPanel id="deleteResults" layout="block" styleClass="deleteResults">
+                <apex:outputText rendered="{!if(deleteResultsOk.size>0, true, false)}" value="Successfully deleted:" styleClass="bold"/><br /><br />                    
+                <apex:repeat value="{!deleteResultsOk}" var="list">
+                        <apex:outputText value=" {!list.name}" styleClass="deleteResultObj deletedColor"/>
+                </apex:repeat>
+                <div class="clear"></div>
+                <br /><br /><br />
+                <apex:outputText rendered="{!if(deleteResultsFail.size>0, true, false)}" value="Delete failed:" styleClass="bold" /><br /><br />
+                <apex:repeat value="{!deleteResultsFail}" var="list">
+                        <apex:outputText value=" {!list.name}" styleClass="deleteResultObj undeletedColor"/>
+                 </apex:repeat>
+                <div class="clear"></div>
+            </apex:outputPanel>
+        </apex:form>
+    </div>
+
+</apex:page>

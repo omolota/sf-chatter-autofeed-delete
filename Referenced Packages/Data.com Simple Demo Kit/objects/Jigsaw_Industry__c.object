@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <actionOverrides>
+        <actionName>Accept</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Clone</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Delete</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Edit</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>List</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>New</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>Tab</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <actionOverrides>
+        <actionName>View</actionName>
+        <type>Default</type>
+    </actionOverrides>
+    <deploymentStatus>Deployed</deploymentStatus>
+    <deprecated>false</deprecated>
+    <enableActivities>false</enableActivities>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>true</enableHistory>
+    <enableReports>true</enableReports>
+    <fields>
+        <fullName>Enabled_Demo_Accounts__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText># of ENABLED Demo Accounts configured under this vertical</inlineHelpText>
+        <label>Enabled Demo Accounts</label>
+        <summaryFilterItems>
+            <field>Jigsaw_Record__c.Is_Demo_Enabled__c</field>
+            <operation>equals</operation>
+            <value>true</value>
+        </summaryFilterItems>
+        <summaryFilterItems>
+            <field>Jigsaw_Record__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Account</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Jigsaw_Record__c.Related_Industry__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Enabled_Demo_Contacts__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>number of ENABLED demo contacts in this vertical</inlineHelpText>
+        <label>Enabled Demo Contacts</label>
+        <summaryFilterItems>
+            <field>Jigsaw_Record__c.Is_Demo_Enabled__c</field>
+            <operation>equals</operation>
+            <value>true</value>
+        </summaryFilterItems>
+        <summaryFilterItems>
+            <field>Jigsaw_Record__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Contact</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Jigsaw_Record__c.Related_Industry__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Enabled_Demo_Leads__c</fullName>
+        <deprecated>false</deprecated>
+        <externalId>false</externalId>
+        <inlineHelpText>number of ENABLED demo leads in this vertical</inlineHelpText>
+        <label>Enabled Demo Leads</label>
+        <summaryFilterItems>
+            <field>Jigsaw_Record__c.Is_Demo_Enabled__c</field>
+            <operation>equals</operation>
+            <value>true</value>
+        </summaryFilterItems>
+        <summaryFilterItems>
+            <field>Jigsaw_Record__c.RecordTypeId</field>
+            <operation>equals</operation>
+            <value>Lead</value>
+        </summaryFilterItems>
+        <summaryForeignKey>Jigsaw_Record__c.Related_Industry__c</summaryForeignKey>
+        <summaryOperation>count</summaryOperation>
+        <trackHistory>false</trackHistory>
+        <type>Summary</type>
+    </fields>
+    <fields>
+        <fullName>Is_Demo_Enabled__c</fullName>
+        <defaultValue>false</defaultValue>
+        <deprecated>false</deprecated>
+        <description>back-end field designating whether or not this industry vertical is enabled for demo</description>
+        <externalId>false</externalId>
+        <inlineHelpText>back-end field designating whether or not this industry vertical is enabled for demo</inlineHelpText>
+        <label>Is Demo Enabled</label>
+        <trackHistory>false</trackHistory>
+        <type>Checkbox</type>
+    </fields>
+    <label>Jigsaw Demo Industries</label>
+    <listViews>
+        <fullName>All</fullName>
+        <filterScope>Everything</filterScope>
+        <label>All</label>
+    </listViews>
+    <nameField>
+        <label>Demo Industry Name</label>
+        <trackHistory>false</trackHistory>
+        <type>Text</type>
+    </nameField>
+    <pluralLabel>Jigsaw Demo Industries</pluralLabel>
+    <searchLayouts>
+        <excludedStandardButtons>New</excludedStandardButtons>
+        <searchFilterFields>NAME</searchFilterFields>
+    </searchLayouts>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

@@ -1,0 +1,57 @@
+<apex:page standardController="aorb__Question__c" extensions="aorb.editQuestion">
+	<apex:sectionHeader title="Ask Your Org" subtitle="Edit your question"/>
+	<apex:form >
+		<apex:pagemessages />	
+		<apex:pageBlock title="Question information" mode="edit">
+    		<apex:pageBlockButtons >
+	        	<apex:commandButton action="{!saveQuestion}" value="{!$Label.Save}" /> 
+				<apex:commandButton action="{!cancelQuestion}" value="{!$Label.Cancel}" />
+	    	</apex:pageBlockButtons>
+    	    <apex:pageBlockSection title="{!$Label.Edit_Question}" columns="1">			
+				<apex:pageBlockSectionItem >
+							{!$Label.Question}: 
+							<apex:inputTextarea value="{!questionPassed.aorb__Question__c}"
+								cols="80"
+								rows="3" />
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+			<apex:pageBlockSection title="Question Settings" columns="2">		
+				<apex:pageBlockSectionItem >
+						{!$Label.Active}: 
+						<apex:inputField value="{!questionPassed.aorb__Active__c}" />
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+						{!$Label.VotingClosed}:
+						<apex:inputField value="{!questionPassed.aorb__Voting_Closed__c}" />
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+						Can users see questions before they vote? 
+						<apex:inputField value="{!questionPassed.aorb__Can_users_see_votes_before_they_vote__c}" />
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+						Show in left navigation? 
+						<apex:inputField value="{!questionPassed.aorb__Show_in_left_navigation__c}" />
+				</apex:pageBlockSectionItem>
+				
+			</apex:pageBlockSection>
+			<apex:pageBlockSection title="Options" columns="2">			
+    		 	<apex:pageBlockSectionItem >
+							{!$Label.Option_One}
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+							{!$Label.Option_Two}
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+							<apex:inputTextarea cols="37"
+								rows="3"
+								value="{!optionOne.aorb__Option__c}"/>
+				</apex:pageBlockSectionItem>
+				<apex:pageBlockSectionItem >
+							<apex:inputTextarea cols="37"
+								rows="3"
+								value="{!optionTwo.aorb__Option__c}"/>
+				</apex:pageBlockSectionItem>
+			</apex:pageBlockSection>
+		</apex:pageBlock>
+	</apex:form>
+</apex:page>

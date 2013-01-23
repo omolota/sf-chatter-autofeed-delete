@@ -1,0 +1,492 @@
+<apex:page controller="aorb.questionHome" sidebar="false" showHeader="{!displayHeader}">
+<style>
+  .question {
+    background-color:#1797c0;
+    color:white;
+    font-size:20px; 
+    -webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	padding-top:5px;
+	padding-bottom:5px;  
+
+  } 
+  .vs {
+  background-color:#1797c0;
+    color:white;
+    font-size:12px; 
+    -webkit-border-radius: 10px;
+	-moz-border-radius: 10px;
+	border-radius: 10px;
+	padding-left:5px;
+	padding-right:5px;
+	
+  }
+  .votingClosed {
+
+  	background-color:red;
+    color:white;
+    font-size:12px;
+	padding-bottom:2px;  
+	padding-left:5px;
+    padding-right:2px;
+  	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	margin-bottom:3px;
+  }
+  .date {
+  	color:grey;
+  	margin-left:5px;
+  }
+  .nav_header{
+  	margin-top:8px;
+  	background-color:#58c1dd;
+    color:white;
+    font-size:12px;
+    padding-top:2px;
+	padding-bottom:2px;  
+	padding-left:5px;
+    padding-right:2px;
+  	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	margin-bottom:3px;
+
+  }
+  .err {
+    color:red;
+  }
+  .voteButton {
+    align:right;
+  }
+ 
+  .votes {
+    background-color:#58c1dd;
+    color:white;
+    font-size:12px;
+    padding-top:2px;
+	padding-bottom:2px;  
+	padding-left:5px;
+    padding-right:2px;
+  	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	
+  
+  }
+  .winning {
+  
+  }
+  .losing {
+  
+  }
+   .vote {
+    margin-top:6px;
+    background-color:#F8F8FF;
+    padding-top:2px;
+	padding-bottom:2px;  
+	padding-left:2px;
+    padding-right:2px;
+  	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	border-color:#73c0d9;
+	border-width:1px;
+	border-style:solid;
+  
+  }
+  
+  .leftwidgetHeader {
+   background-color:#58c1dd;
+    color:white;
+    font-size:12px;
+    padding-top:2px;
+	padding-bottom:2px;  
+	padding-left:5px;
+    padding-right:2px;
+  	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	margin-bottom:3px;
+	margin-top:3px;
+  
+  
+  }
+  .option {
+    z-margin:100;
+    padding-left:15px;
+    padding-right:15px;
+    background-color:#58c1dd;
+    color:white;
+    font-size:16px;
+	padding-top:5px;
+	padding-bottom:5px;  
+  	-webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	height:100%;
+  
+  }
+
+  .optionImage {
+    z-margin:9;
+  
+  }
+  .hidden {
+    display:none;
+  }
+  .optionImage {
+  	background-color:#F8F8FF;
+     -webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	padding-left:2px;
+    padding-right:2px;
+    padding-top:2px;
+	padding-bottom:2px;
+  }
+  .voteBack {
+    background-color:#d7eefa;
+     -webkit-border-radius: 4px;
+	-moz-border-radius: 4px;
+	border-radius: 4px;
+	padding-left:5px;
+    padding-right:5px;
+    padding-top:2px;
+	padding-bottom:2px;
+  }
+  .leftwidget {
+  padding-left:5px;
+    padding-right:5px;
+    padding-top:5px;
+	padding-bottom:5px;
+  }
+  .comment_body {
+  
+  	padding-left:10px;
+    padding-right:10px;
+    padding-top:10px;
+	padding-bottom:10px;
+  }
+  .comment {
+    padding-bottom:3px;
+  }
+  .smallLink {
+    font-size:11px;
+  }
+ 
+  a:link {
+    color:#1797c0;
+  }      /* unvisited link */
+  
+  a:visited {
+    color:#1797c0;
+  }  /* visited link */
+  
+  a:hover { 
+    color:#1797c0;
+  }  /* mouse over link */
+  
+  a:active {
+    color:#1797c0;
+  }  /* selected link */
+
+
+  </style>
+	<apex:outputPanel rendered="{!isQuestionValid}" id="poll">
+		<table>
+			<tr>
+				<td valign="top" width="200px">
+					
+					<div class="nav_header"> Created By </div>
+					<div class="leftwidget"> 
+						<table width="100%" cellpadding="2" cellspacing="2" border="0">
+							<tr>
+								<td colspan="2">
+									<div>
+										<strong>
+											{!questionPassed.createdBy.Name}
+										</strong>
+									</div>
+								</td>
+							</tr>
+							<tr>
+							
+								<td valign="top" width="60px">
+									<img src="{!questionPassed.CreatedBy.SmallPhotoUrl}" />
+								</td>
+								<td valign="top">	
+									<div>
+										<strong>About me:</strong>&nbsp;{!questionPassed.createdBy.AboutMe}
+									</div>
+								</td>
+							</tr>
+						</table>
+						<hr />
+						<div>
+							<strong>Created:</strong>&nbsp;
+							<apex:outputField value="{!questionPassed.CreatedDate}" />
+						</div>
+						<div>
+							<strong>Total Votes:</strong>
+								{!totalVoteCount}
+						</div>
+						
+					</div>
+					<div class="leftwidgetHeader"> Who has voted? </div> 
+					<div class="leftwidget">
+						<apex:repeat value="{!voters}" var="voter">
+							<a href="/{!voter.Id}" target="_blank">
+								<img width="45px"
+									height="45px"
+										src="{!voter.SmallPhotoUrl}" />
+							</a>	
+						</apex:repeat>
+										
+					</div>
+				 	<apex:outputPanel rendered="{!morePolls}">
+				 		<div class="leftwidgetHeader">More polls</div>
+				 		<div class="leftwidget">
+				 			<apex:repeat value="{!otherPolls}" var="poll">
+				 				<table width="100%" border="0" cellpadding="2" cellspacing="0">
+				 					<tr>
+				 						<td valign="top" width="10px">
+				 							<img src="{!$Resource.poll}"  />
+				 						</td>	
+				 						<td valign="middle" align="left">
+				 							<a href="/apex/QuestionHome?id={!poll.Id}" target="_blank">
+				 						{!poll.Name}
+				 					</a>
+				 						</td>			 				
+				 					</tr>	
+				 				</table>	
+				 			</apex:repeat>
+				 		</div>
+				 	</apex:outputPanel>
+				</td>
+				<td valign="top">
+					<table class="tbl" width="800px" border="5" bordercolor="white" cellpadding="0" cellspacing="3">
+				   		<tr>
+				     		<td colspan="3" align="center" valign="top">
+				        		<apex:outputPanel rendered="{!votingClosed}">
+				        			<div class="votingClosed">
+				        				Voting is now closed
+				        			</div>
+				        		</apex:outputPanel>
+				        		<div class="question">{!questionPassed.question__c}</div>
+				        		
+				      		</td>
+				    	</tr> 
+				    	<tr>
+				   	  		<td width="50%" valign="top">
+				   	  			<div class="option">
+			              			{!optionOne.Option__c} 
+			            		</div>    
+				   	  		</td>
+				   	  		<td valign="middle" class="vs">
+				   	  		 VS
+				   	  		</td>
+				   	  		<td width="50%" valign="top">
+				    			<div class="option">
+				              		{!optionTwo.Option__c} 
+				            	</div>    
+				    		</td>
+				    	</tr>
+				    	<tr>
+				    		<td valign="top">	
+				    			<apex:form >
+				    				<table width="100%" cellpadding="2" cellspacing="2" border="0">
+			        					<tr>
+			          						<td>
+			           							<apex:outputPanel id="voteBox" rendered="{!!hasUserVoted}">
+			            							<div class="voteBack">
+			            								<table cellpadding="2" cellspacing="0" class="voteBack">
+			              									<tr>
+			                									<td>
+									                  				<apex:inputTextArea cols="75" value="{!commentOne}" />
+									                			</td> 
+									                			<td align="right"> 
+									                 		 		<apex:commandButton value="Vote" 
+									     	  				          action="{!voteForOptionOne}" 
+									     					          rerender="{!$Component.poll}"/>
+									                			</td>
+									              			</tr>
+						 			              			<tr>
+									              				<td>
+									              		 			<span class="err">
+									                    				{!voteOneError}
+									                  				</span>
+									                 			</td>
+									                		</tr>
+									            		</table>
+									            	</div>
+									          	</apex:outputPanel>
+									        </td>
+									      </tr>
+									      <tr> 
+									      	<td>
+									      		<apex:outputPanel rendered="{!viewVotes}">        	
+									      			<div class="votes">
+									              		{!optionOneVoteCount} votes so far...
+									            	</div>
+									            </apex:outputPanel>
+									           </td>
+									    	</tr>
+											<tr>
+												<td>
+										        	<apex:repeat value="{!optionOneVotes}" var="vote" rendered="{!viewVotes}">
+														<div class="vote">
+															<table width="100%" cellpadding="0" cellspacing="3" border="0">
+															 	<tr>
+															    	<td valign="top" width="60px">
+															        	<img src="{!vote.pictureUrl}" />
+															       	</td> 
+															        <td valign="top" align="left">
+															        	<div>
+															            	<a href="/{!vote.commenterId}" target="_blank">{!vote.commenterName}</a>  
+															            	<apex:outputText styleClass="date" value="{0,date,E MM/d/yyyy}">
+														     					<apex:param value="{!vote.createdDate}" />
+																			</apex:outputText> 
+															                <div class="comment_body">
+															                	{!vote.voteComment}
+															                </div>
+															           	</div>														          
+															     	</td>
+																</tr>
+															   	<tr>
+															    	<td  align="center" >
+															        	<span class="date">
+																			{!vote.likeCount} Likes 
+																		</span>
+															       	</td>
+															       	<td>
+															       		<apex:outputpanel rendered="{!vote.renderLikeLink}">
+																       		<table border="0" cellpadding="2" cellspacing="0">
+																				<tr>
+																					<td valign="middle" width="10px">
+																						<img src="{!$Resource.Like}" />
+																					</td>
+																					<td valign="middle" align="left">
+																						<apex:commandLink styleClass="smallLink" action="{!likeVote}">Like
+																		        			<apex:param name="commentId" value="{!vote.id}" assignTo="{!commentId}"/>  
+																		         		</apex:commandLink>
+																					</td>
+																				</tr>
+																			</table>
+																 		</apex:outputpanel>
+																 	</td>
+															  	</tr>
+															</table>
+														</div>
+													</apex:repeat> 
+												</td>
+											</tr>
+										</table>
+									</apex:form>
+				    	 
+				    	</td>
+				    	<td>
+				    	</td>
+				    	<td valign="top">
+				    		<apex:form >
+					    		<table width="100%" cellpadding="2" cellspacing="2" border="0">
+				        			<tr>
+			          					<td>
+			           						<apex:outputPanel id="voteBox" rendered="{!!hasUserVoted}">
+			            						<div class="voteBack">
+			            							<table cellpadding="2" cellspacing="0" class="voteBack">
+			              								<tr>
+			                								<td>
+									                  			<apex:inputTextArea cols="75" value="{!commentTwo}" />
+									                		</td> 
+									                		<td align="right"> 
+									                 		 	<apex:commandButton value="Vote" 
+									     	  				          action="{!voteForOptionTwo}" 
+									     					          rerender="{!$Component.poll}"/>
+									                		</td>
+									              		</tr>
+									              		<tr>
+									              			<td>
+									              		 		<span class="err">
+									                    			{!voteTwoError}
+									                  			</span>
+									                 		</td>
+									                	</tr>
+									            	</table>
+									            </div>		
+									        </apex:outputPanel>
+									     </td>
+									</tr>
+									<tr>
+									 	<td>
+									     	<apex:outputPanel rendered="{!viewVotes}">        	
+									      		<div class="votes">
+									            	{!optionTwoVoteCount} votes so far...
+									            </div>
+									        </apex:outputPanel>
+									    </td>
+									</tr>
+				        			<tr>
+			        			  		<td>
+			        			  			<apex:repeat value="{!optionTwoVotes}" var="vote" rendered="{!viewVotes}">
+							          			<div class="vote">
+													<table width="100%" cellpadding="0" cellspacing="3" border="0">
+													 	<tr>
+													    	<td valign="top" width="60px">
+													        	<img src="{!vote.pictureUrl}" />
+													       	</td> 
+													        <td valign="top" align="left">
+													        	<div>														            	
+													        		<a href="/{!vote.commenterId}" target="_blank">{!vote.commenterName}</a>
+													        		<apex:outputText styleClass="date" value="{0,date,E MM/d/yyyy}">
+														     					<apex:param value="{!vote.createdDate}" />
+																			</apex:outputText>   
+															        <div class="comment_body">
+															        	{!vote.voteComment}
+															        </div>
+																</div>
+															</td>
+														</tr>
+														<tr>
+															<td  align="center" >
+																<span class="date">
+																	{!vote.likeCount} Likes 
+																</span>
+															</td>
+															<td>
+																<apex:outputpanel rendered="{!vote.renderLikeLink}">
+																       		<table border="0" cellpadding="2" cellspacing="0">
+																				<tr>
+																					<td valign="middle" width="10px">
+																						<img src="{!$Resource.Like}" />
+																					</td>
+																					<td valign="middle" align="left">
+																						<apex:commandLink styleClass="smallLink" action="{!likeVote}">Like
+																		        			<apex:param name="commentId" value="{!vote.id}" assignTo="{!commentId}"/>  
+																		         		</apex:commandLink>
+																					</td>
+																				</tr>
+																			</table>
+																</apex:outputpanel>
+															</td>
+														</tr>
+													</table>
+												</div>			
+							        		</apex:repeat> 
+							      		</td>
+									</tr>
+				       			</table>
+				       		</apex:form>				    	 
+				    	</td>  
+				   	</tr> 
+				</table>
+			</td>
+		</tr>
+	</table>
+	<apex:messages />
+	</apex:outputPanel>
+	<apex:outputPanel rendered="{!!isQuestionValid}">
+		<div>Question is either inactive or not set up properly</div>
+	</apex:outputPanel>
+</apex:page>

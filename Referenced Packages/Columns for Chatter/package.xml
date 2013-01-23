@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Package xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Columns for Chatter</fullName>
+    <apiAccessLevel>Unrestricted</apiAccessLevel>
+    <namespacePrefix>HTCC</namespacePrefix>
+    <types>
+        <members>ht_ccRemotes</members>
+        <name>ApexClass</name>
+    </types>
+    <types>
+        <members>ChatterColumns</members>
+        <name>ApexPage</name>
+    </types>
+    <types>
+        <members>Chatter_Columns</members>
+        <name>CustomTab</name>
+    </types>
+    <types>
+        <members>ccJS</members>
+        <name>StaticResource</name>
+    </types>
+    <version>26.0</version>
+</Package>

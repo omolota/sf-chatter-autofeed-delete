@@ -1,0 +1,113 @@
+<apex:page >
+
+    <apex:form >
+        <apex:tabPanel switchType="client" selectedTab="LandingPage" id="theTabPanel" activeTabClass="dr-tbpnl-tb-act" inactiveTabClass="inactiveTab">
+            
+            <apex:tab label="Clean Settings Landing Page" name="LandingPage" id="LandingTab">
+                <apex:image value="{!$Resource.jsSDO__CAS_Landing}"/>
+            </apex:tab>
+            
+            <apex:tab label="Leads Settings Details" name="LeadsDetails" id="LeadsDetails">
+                <apex:image value="{!$Resource.jsSDO__CAS_LeadsDetails}"/>
+            </apex:tab>
+            
+            <apex:tab label="Contacts Settings Details" name="ContactsDetails" id="ContactsDetails">
+                <apex:image value="{!$Resource.jsSDO__CAS_ContactsDetails}"/>
+            </apex:tab>
+            
+            <apex:tab label="Companies Settings Details" name="CompaniesDetails" id="CompaniesDetails">
+                <apex:image value="{!$Resource.jsSDO__CAS_AccountsDetails}"/>
+            </apex:tab>
+            
+        </apex:tabPanel>
+    </apex:form>
+
+    <style type="text/css">
+        .activeTab {background-color: #8A480F; color:white; background-image:none; font-size:11px;}
+        .inactiveTab { background-color: lightgrey; color:black; background-image:none; font-size:11px; font-style:default; font-color:lightgrey;}
+        
+        .dr-tbpnl-tb-inact {
+        background-color:#1797C0;
+        background-image:url("");
+        background-position:center top;
+        background-repeat:repeat-x;
+        border-color:#FFFFFF;
+        border-style:solid;
+        border-width:1px 1px 0;
+        color:white;
+        cursor:default;
+        font-weight:bold;
+        font-size:11px;
+        min-height:18px;
+        height:19px;
+        }
+        
+        .dr-tbpnl-tb-act {
+        background-color:#D4EBF2;
+        background-image:url("/img/alohaSkin/tabs_sprite.png");
+        font-weight:bold;
+        font-size:12px;
+        height:20px;
+        } 
+        
+        .dr-tbpnl-tb-sel {
+        background-color:#D4EBF2;
+        background-image:url("/img/alohaSkin/tabs_sprite.png");
+        font-weight:bold;
+        color:black;
+        height:19px;
+        }
+            
+         .dr-tbpnl-cntnt {
+        background:url(https://na1.salesforce.com/img/alohaSkin/feeds/feedbg.png)repeat-x 0 0;
+        border-bottom-color:#C0C0C0;
+        border-left-color:#C0C0C0;
+        border-right-color:#C0C0C0;
+        color:#000000;
+        font-family:Arial,Verdana,sans-serif;
+        font-size:12px;
+        height:240px;
+        }  
+        
+        #theTabPanel{
+        width:998px;
+        
+        }
+        
+        .caseDescript{
+        height:85px;
+        
+        }
+        
+        .wide{
+        width:200px;
+        }
+        
+        .superWide{
+        width:500px;
+        height:300px;
+        }
+        body .bPageBlock, body #bodyCell .bResource .secondaryPalette, body .secondaryPalette.bPageBlock, body .overlayDialog .secondaryPalette.bPageBlock, body .individualPalette .secondaryPalette.bPageBlock, body .bodyDiv .genericTable, body .genericPageBlockTable, body .bodyDiv .bSubBlock, body .bComponentBlock .bPageBlock, body .bMyDashboard .bPageBlock, body.rlHoverFrame .bPageBlock, body.subjectSelectionPopup div.choicesBox, body.lookupTab .secondaryPalette.bPageBlock, body.popupTab .secondaryPalette.bPageBlock, body.UserTagStatsPage .secondaryPalette.bPageBlock {
+        -moz-border-radius:4px 4px 4px 4px;
+        background-color:transparent;
+        border-color:-moz-use-text-color #EAEAEA #EAEAEA;
+        border-style:none solid solid;
+        border-width:0 1px 1px;
+        }
+        
+        #theWarning{
+        color:white;
+        float:right;
+        font-size:120%;
+        font-weight:bold;
+        height:290px;
+        margin-right:100px;
+        margin-top:-306px;
+        position:relative;
+        width:300px;
+        z-index:2;
+        
+        }    
+    </style>
+
+</apex:page>

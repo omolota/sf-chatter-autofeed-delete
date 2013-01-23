@@ -1,0 +1,646 @@
+<apex:page controller="HTCC.ht_ccRemotes" sidebar="false" showheader="true">
+<apex:stylesheet value="{!URLFOR($Resource.HTCC__ccJS,'jquery-ui-1.8.17/css/redmond/jquery-ui-1.8.17.css')}"/>
+<apex:includeScript value="{!URLFOR($Resource.HTCC__ccJS, 'jquery-ui-1.8.17/js/jquery-1.7.1.min.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.HTCC__ccJS, 'jquery-ui-1.8.17/js/jquery-ui-1.8.17.min.js')}" />
+<apex:includeScript value="{!URLFOR($Resource.HTCC__ccJS, 'jquery-ui-1.8.17/js/jQueryMasonry.js')}" />
+
+<script>
+    var j$ = jQuery.noConflict();
+    var filters = [];
+    var profilePics = [];
+    var feedStart = null;
+    var feedEnd = null;
+    
+    var feedItemIds=[];
+    var commentIds=[];
+    
+    var gettingFeed = new Boolean();    
+    gettingFeed = false;     
+    
+    j$(document).ready(function(){
+        
+        j$('#showOlder').button();
+        
+        j$(window).scroll(function(){
+        	        
+            var winTop = j$(window).scrollTop() + 250;
+            
+            if(winTop >= (j$(document).height() - (j$(window).height()))) {
+              //console.log('scrolled to bottom, checking for new feed items');
+              getFeed('old');
+            }
+        
+        });           
+    
+        if('{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}' != '' || '{!JSENCODE($CurrentPage.parameters.pinnedImageSourceURL)}' != ''){
+        	var secureContent = new Boolean();
+        	secureContent = false;
+        	
+			if('{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}' != ''){
+				j$('#pinnedImagePreview').append("<img src='{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}'/>");
+				j$('#pinSourceInfo').append("<p><b>Image URL</b> - <a href='{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}' target='_blank'>{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}</a>");
+				if('{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}'.substr(0,5)=='https')secureContent = true;
+			}
+			if('{!JSENCODE($CurrentPage.parameters.pinnedImageSourceURL)}' != ''){
+				j$('#pinSourceInfo').append("<p><b>Source URL</b> - <a href='{!JSENCODE($CurrentPage.parameters.pinnedImageSourceURL)}' target='_blank'>{!JSENCODE($CurrentPage.parameters.pinnedImageSourceURL)}</a>");				
+				if('{!JSENCODE($CurrentPage.parameters.pinnedImageSourceURL)}'.substr(0,5)=='https')secureContent = true;
+			}
+			if(secureContent){
+				j$('#pinSourceInfo').prepend("<div class='ui-state-highlight ui-corner-all'>" + 
+				"<span class='ui-icon ui-icon-info' style='float: left; margin-right: .3em;'></span>" +
+				"You're attempting to pin content from a secure source. Users without access to the source won't be able to see the content.</div>");
+			}
+			
+        	j$('#pinDialog').dialog({
+        		modal:true,
+        		width:'450',
+        		buttons:{
+        			'Post': function(){
+        				postPin(j$('#pinTitle').val(),'{!JSENCODE($CurrentPage.parameters.pinnedImageURL)}','{!JSENCODE($CurrentPage.parameters.pinnedImageSourceURL)}',j$('#pinBody').val());
+        				j$(this).dialog('close');
+        			}
+        		}
+        	}); 
+        }
+        
+        initLayout();
+        
+        getFeed('initial');       
+            
+    });
+    
+    function getFeed(age){
+    	if(!gettingFeed){
+    		gettingFeed=true;
+		    HTCC.ht_ccRemotes.getFeed(filters,age,feedStart,feedEnd,function(result,event){
+		    	//console.log(result);
+		        if(event.type == 'exception'){
+		            alert('Error getting feed: ' + event.message);
+		            gettingFeed = false;
+		        }else{
+		        	if(result.length > 0){
+			            showFeed(result,age);			            		        	
+		        	}else{
+		        		//if we're checking for new items and didn't find any, we still want to check for new comments on existing items.
+		        		if(age=='new')getComments();
+		        	}
+		        	gettingFeed = false;
+		        }    	
+		    });
+	    }
+    }
+    
+    function showFeed(result,age){   	
+    	    	    	
+    	var feedItems=[];
+    	
+    	var userIds=[];   	
+    	
+    	if(j$.inArray('{!$User.Id}',userIds) == -1)userIds.push('{!$User.Id}');
+    	    	
+    	j$.each(result, function(i, item){
+    		
+    		feedItemIds.push(item.Id);
+    		
+    		if(i==0 && (age=='new' || age=='initial')){
+    			feedStart = item.CreatedDate;
+    			//console.log('feedStart: ' + feedStart);
+    		}
+    		
+    		if(i==(result.length-1) && (age=='old' || age=='initial')){
+    			feedEnd = item.CreatedDate;
+    			//console.log('feedEnd: ' + feedEnd);
+    		}    		
+    		
+    		var itemDiv = j$("<div class='feedItem' id='" + item.Id + "'></div>");
+    		
+    		if(item.Type == 'LinkPost'){
+    			var linkPostDiv = j$("<div class='feedLinkPost'></div>");
+    			var linkPost = j$("<a href='" + item.LinkUrl + "' target='_blank'></a>");   
+    			linkPost.append("<b>" + item.Title + "</b> - " + item.LinkUrl);
+    			var ext = item.LinkUrl.substr(item.LinkUrl.length - 4, 4);
+    			var longExt = item.LinkUrl.substr(item.LinkUrl.length - 5, 5);
+    			var bodyStart = '';
+    			if(item.Body != null)bodyStart = item.Body.substr(0,14);
+    			if(ext=='.jpg' || ext=='.gif' || ext=='.png' || longExt=='.jpeg' || bodyStart=='*Pinned Image*'){    				
+    				linkPost.append("<div class='feedImg'><img src='" + item.LinkUrl + "'></div>");
+    			
+    			} 
+    			linkPostDiv.append(linkPost);
+    			itemDiv.append(linkPostDiv);			
+    		}
+    		
+    		if(item.Type == 'ContentPost'){
+    			var contentLinkDiv = j$("<div class='feedContentLink'></div>");
+    			var contentLink = j$("<a href='/" + item.RelatedRecordId + "' class='feedLink' target='_blank'></a>");    			
+    			contentLink.append("<div class='feedContentTitle'>" + item.Title + "</div>");  
+    			contentLink.append("<div class='feedImg'><img src='/sfc/servlet.shepherd/version/renditionDownload?rendition=THUMB720BY480&amp;versionId=" + item.RelatedRecordId + "&amp;operationContext=CHATTER'></div>");
+    			if(item.ContentDescription != null)contentLink.append("<div class='feedContDesc'>" + item.ContentDescription + "</div>");  
+    			contentLinkDiv.append(contentLink);
+    			itemDiv.append(contentLinkDiv);			
+    		}    		
+    		
+    		var feedLink = j$("<a href='/" + item.Id + "' class='feedLink' target='_blank'></a>");
+    		
+    		//post body
+    		if(item.Body != null)feedLink.append("<div class='feedBody'>" + item.Body + "</div>");
+    		
+    		//trackedchange
+    		if(item.Type == 'TrackedChange'){
+    			var changesDiv = j$("<div class='feedBody'></div>");
+    			j$.each(item.FeedTrackedChanges, function(i,change){
+    				var changeString = '';
+    				
+    				if(change.FieldName == 'created'){
+    					changeString = 'Object created';
+    				}else{
+	    				changeString = 'Changed ' + change.FieldName;
+	    				
+	    				if(change.OldValue != null || change.NewValue != null){
+	    					changeString += ' from ' + change.OldValue + ' to ' + change.NewValue;
+	    				}    			
+       				}
+
+    				
+    				changesDiv.append(changeString + "<br/>");
+    			});
+    			feedLink.append(changesDiv);
+    		}
+    		
+    		//dashboard snapshot
+    		if(item.Type == 'DashboardComponentSnapshot'){
+    		 	feedLink.append("<div class='feedBody'>Click here to view the dashboard snapshot.</div>");		
+    		}
+    		
+    		//approval item
+    		if(item.Type == 'ApprovalPost'){
+    		 	feedLink.append("<div class='feedBody'>Click here to view the approval item.</div>");		
+    		}    		
+    		
+    		itemDiv.append(feedLink);
+    		
+    		//add authoring info
+    		var authorDiv = j$("<div class='feedAuthor'></div>");
+    		
+    		
+    		
+    		//create the user thumbnail
+    		if(item.CreatedBy.Type == 'User'){
+    			var authorImgLink = j$("<a class='authorThumbLink_" + item.CreatedById + "' href='/" + item.CreatedById + "' target='_blank'></a>");
+    			
+    			if(j$.inArray(item.CreatedById,userIds) == -1)userIds.push(item.CreatedById);
+    			
+    			authorDiv.append(authorImgLink);
+    		}
+    		
+    		
+    		var likeText = 'Like';
+    		if(item.FeedLikes != null && item.FeedLikes.length > 0){
+    			likeText = 'Unlike';
+    		}
+    		
+    		authorDiv.append("<p><a target='_blank' class='authorLink' href='/" + item.CreatedById + "'>" + item.CreatedBy.Name + "</a> on " 
+    			+ item.Parent.Type + " <a target='_blank' class='objectLink' href='/" + item.ParentId + "'>" + item.Parent.Name 
+    			+ "</a><br/><span class='timeStamp' id='timeStamp_" + item.Id + "'>" + getTimeStamp(item.CreatedDate) + "</span><br/>"
+    			+ "<a class='toggleLike' id='toggleLike_" + item.Id + "' href=\"javascript:toggleLike('" + item.Id + "')\">" 
+    			+ likeText + "</a>&nbsp;-&nbsp;<span class='likes' id='likes_" + item.Id + "'>" + item.LikeCount + " likes</span></p>");
+    		    		
+    		itemDiv.append(authorDiv);
+    		
+    		//create the comment section
+    		var commentDiv = j$("<div class='feedComments' id='feedComments_" + item.Id + "'></div>");
+    		
+    		var newCommentDiv = j$("<div class='newComment'></div>");
+    		
+    		var commentAuthorImgLink = j$("<a target='_blank' class='authorThumbLink_{!$User.Id}' href='/{!$User.Id}'></a>"); 
+    		
+    		newCommentDiv.append(commentAuthorImgLink);
+    		
+    		newCommentTextP = j$("<p></p>");
+    		
+    		newCommentText = j$("<textarea id='newCommentBody_" + item.Id + "'></textarea>");
+    		
+    		newCommentTextP.append(newCommentText);
+    		
+    		newCommentDiv.append(newCommentTextP);
+    		
+    		var commentLinkP = j$("<p class='newCommentButtonP'></p>");
+    		
+    		var commentLink = j$("<a class='newCommentButton' href=\"javascript:postComment('"+ item.Id +"')\">comment</a>");
+    		
+    		commentLink.button();
+    		
+    		commentLinkP.append(commentLink);
+    		
+    		newCommentDiv.append(commentLinkP);   		
+    		    		
+    		itemDiv.append(commentDiv,newCommentDiv);
+    		
+    		commentLinkP.hide();
+    		
+    		newCommentText.click(function(e){
+    			commentLinkP.show();
+    			j$(this).css({'height':'50px'});
+    			updateLayout();
+    		});
+    		
+    		//getTimeStamp(item.Id,item.CreatedDate);
+    		
+    		feedItems.push(itemDiv.get(0)); 		
+	    		
+    		
+    	});
+    	
+    	
+    		
+   		if(age=='old'||age=='initial'){
+   			j$('#feedContainer').append( j$(feedItems) ).masonry( 'appended', j$(feedItems) );   
+   		}else if(age=='new'){
+   			j$('#feedContainer').prepend( j$(feedItems) ).masonry( 'reload' );
+   		} 
+   		
+   		getUserThumbs(userIds);
+    	
+    	getComments();		
+    	
+    	if(age=='initial'){
+    		setTimeout("checkForNewFeedItems()",15000);
+    	}
+		
+    }
+    
+    function checkForNewFeedItems(){
+    	//console.log('Checking for new feed items');
+    	getFeed('new');
+    	setTimeout("checkForNewFeedItems()",15000);
+    }
+    
+    function postComment(feedItemId){
+    	var commentBody = j$('#newCommentBody_' + feedItemId).val();
+    	
+    	HTCC.ht_ccRemotes.postNewComment(feedItemId,commentBody,function(result,event){
+	        if(event.type == 'exception'){
+	            alert('Error posting comment: ' + event.message);
+	        }else{    	
+	        	if(result){
+	        		//console.log('successful comment post: ' + commentBody);
+	        		j$('#newCommentBody_' + feedItemId).val('');
+	        		getComments([feedItemId]);
+	        	}else{
+	        		//console.log('comment not posted: ' + commentBody);
+	        	}
+	        }
+	    });
+    }
+    
+    function initLayout(){
+        j$('#feedContainer').masonry({
+        	itemSelector:'.feedItem',
+        	columnWidth:235
+        });    	
+    }
+    
+    function updateLayout(){
+    	//console.log('Entered update layout');
+
+    	//if(!updatingLayout){
+    		//console.log('Updating layout');
+    		//updatingLayout=true;
+	    	j$('#feedContainer').imagesLoaded(function(){
+		        /*
+		        j$('#feedContainer').masonry({
+		        	itemSelector:'.feedItem',
+		        	columnWidth:240
+		        });
+		        */
+		        
+		        j$('#feedContainer').masonry('reload'); 
+		        //updatingLayout=false;   	
+	    	});      	
+    	//}
+
+    }
+    
+    function getUserThumbs(uIds){
+   		//console.log('entered get user thumbs');    
+    	
+    	//store user ids we don't have thumb urls for in the local array, 'profilePics'. 
+    	var checkDbUids = [];
+    	
+    	j$.each(uIds, function(i, uId){
+   	    	
+   	    	var foundInArray = new Boolean();
+	    	foundInArray = false;    	
+	    	
+	    	var imgLinks = j$('.authorThumbLink_' + uId);
+	    	
+	    	j$.each(profilePics, function(i, pic){
+	    		if(pic.uId==uId){
+	    			//console.log('Found thumb url in array.');
+	    			foundInArray = true;
+	    			imgLinks.html("<img class='authorThumb' src='" + pic.URL + "'/>");
+	    			updateLayout();
+	    			return false;
+	    		}
+	    	});
+	    	
+	    	if(!foundInArray){
+	    		checkDbUids.push(uId);
+	    	}
+	    	
+	    	
+	    });
+	    
+	    		
+	    if(checkDbUids.length > 0){
+	    	//console.log('getting user thumbs from db');
+	    	HTCC.ht_ccRemotes.getUserThumbs(checkDbUids,function(result,event){
+		        if(event.type == 'exception'){
+		            alert('Error getting user thumnails: ' + event.message);
+		        }else{
+		        	var resultUids = [];
+		        			        
+					j$.each(result, function(i,u){
+						profilePics.push({'uId':u.Id,'URL':u.SmallPhotoUrl});
+						resultUids.push(u.Id);
+					});
+		        	
+					getUserThumbs(resultUids);
+		        }     		
+	    	}); 	    
+	    }		
+		
+    }
+    
+    function getComments(){
+    
+    	HTCC.ht_ccRemotes.getComments(feedItemIds,commentIds,function(result,event){
+    		if(event.type == 'exception'){
+    			alert('Error getting comments: ' + event.message);
+    		}else{    		
+    			var userIds = [];
+    			j$.each(result, function(i,c){
+					
+					commentIds.push(c.Id);
+					
+					if(j$.inArray(c.CreatedById,userIds)==-1)userIds.push(c.CreatedById);    			
+    			
+    				var commentsDiv = j$('#feedComments_' + c.FeedItemId);
+    				
+	    			var authorImgLink = j$("<a target='_blank' class='authorThumbLink_" + c.CreatedById + "' href='/" + c.CreatedById + "'></a>");    			
+	    			 
+	    			var commentDiv = j$("<div class='feedComment'></div>");
+
+		    		var likeText = 'Like';
+		    		if(c.FeedLikes != null && c.FeedLikes.length > 0){
+		    			likeText = 'Unlike';
+		    		}
+	    			
+	    			//figured out some javascripty date stuff so I don't have to do this
+	    			//commentDiv.append(authorImgLink,"<p><a target='_blank' class='authorLink' href='/" + c.CreatedById + "'>" + c.CreatedBy.Name + "</a>&nbsp;" + c.CommentBody + "<br/><span class='timeStamp' id='timeStamp_" + c.Id + "'>&nbsp;</span></p>");				
+
+	    			commentDiv.append(authorImgLink,"<p><a target='_blank' class='authorLink' href='/" + c.CreatedById + "'>" + c.CreatedBy.Name + "</a>&nbsp;" + c.CommentBody + "<br/><span class='timeStamp' id='timeStamp_" + c.Id + "'>" + getTimeStamp(c.CreatedDate) + "</span></p>");				
+    				
+    				commentsDiv.append(commentDiv);
+    				
+    				//figured out some javascripty date stuff so I don't have to do this
+    				//getTimeStamp(c.Id,c.CreatedDate);
+    				
+    				
+    			});    	
+    			
+    			if(userIds.length > 0)getUserThumbs(userIds);	
+    		}
+    	});
+    
+    }
+    
+    function getTimeStamp(createdDate){
+    //function getTimeStamp(itemId,createdDate){
+    	
+    	/*
+    	HTCC.ht_ccRemotes.convertDateTimeToLocal(createdDate, function(result,event){
+	        if(event.type == 'exception'){
+	            alert('Error getting local datetime: ' + event.message);
+	        }else{
+				j$('#timeStamp_' + itemId).html(result);
+				//updateLayout();
+	        }    	
+    	});
+    	*/  	
+    	
+    	//console.log('entered getTimeStamp ' + itemId)
+    	
+		var month=new Array();
+		month[0]="January";
+		month[1]="February";
+		month[2]="March";
+		month[3]="April";
+		month[4]="May";
+		month[5]="June";
+		month[6]="July";
+		month[7]="August";
+		month[8]="September";
+		month[9]="October";
+		month[10]="November";
+		month[11]="December";    	
+    	
+    	var dateTime = new Date(createdDate);
+    	
+    	var h = dateTime.getHours();
+    	
+    	var ampm = h >= 12?'PM':'AM';
+    	
+    	h = h>12?h-12:h==0?h+12:h;
+    	
+    	var m = dateTime.getMinutes();
+    	
+    	m = m.length==1?'0' + m:m;
+    	
+    	var timeString = h + ':' + m + ' ' + ampm;
+    	
+    	var dateTimeString = month[dateTime.getMonth()] + ' ' + dateTime.getDay() + ', ' + dateTime.getFullYear() + ' at ' + timeString;
+    	
+    	console.log(dateTimeString);
+    	
+    	return dateTimeString;
+    	
+    }
+    
+    function toggleLike(itemId){
+    	HTCC.ht_ccRemotes.toggleLike(itemId,function(result,event){
+   		    if(event.type == 'exception'){
+	            alert('Error liking item: ' + event.message);
+	        }else{
+	    		var likeText = 'Like';
+	    		if(result.FeedLikes != null && result.FeedLikes.length > 0){
+	    			likeText = 'Unlike';
+	    		}
+	    		j$('#likes_' + itemId).html(result.LikeCount + ' likes');
+	    		j$('#toggleLike_' + itemId).html(likeText);
+	        }    	
+    	});
+    }
+	
+	function postPin(imgTitle, imgURL, srcURL, usrStatus){
+	    HTCC.ht_ccRemotes.postPin(imgTitle, imgURL, srcURL, usrStatus, function(result,event){
+	    	
+	        if(event.type == 'exception'){
+	            alert('Error pinning image: ' + event.message);
+	        }else{
+	        	//console.log('Successful image pin');
+	        	getFeed('new');
+	        }
+	    }); 		
+	}
+    
+</script>
+<style>
+
+div.feedItem{
+	width: 220px;
+	float:left;	
+	margin-bottom:15px;
+	background-color: #ffffff;
+	overflow:hidden;
+	border: 1px solid #dde4ea;
+	-moz-box-shadow: 0 1px 2px rgba(34,25,25,0.4);
+	-webkit-box-shadow: 0 1px 3px rgba(34,25,25,0.4);
+}
+
+div#pinDialog{
+	overflow:hidden;
+}
+
+.bmInstall, .feedTitle, .feedBody, .feedAuthor, .feedContDesc, .feedLinkPost, .feedContentLink, .feedComment, .newComment{
+	padding:10px;
+}
+
+div.feedImg img, div#pinnedImagePreview img{
+	max-width: 200px;
+}
+
+div.feedImg{
+	text-align: center;
+}
+
+a.feedLink, a.feedLink:hover, a.feedLink:active, a.feedLink:visited,
+.feedAuthor a, .feedAuthor a:hover, .feedAuthor a:active, .feedAuthor a:visited,
+.feedLinkPost a, .feedLinkPost a:hover, .feedLinkPost a:active, .feedLinkPost a:visited,
+.feedContentLink a, .feedContentLink a:hover, .feedContentLink a:active, .feedContentLink a:visited{
+	text-decoration:none;
+}
+
+.bmInstall{
+	background-color:#eff7fa;
+}
+
+a.bmInstallLink{
+	font-weight: bold;
+	font-size:1.5em;
+}
+
+.objectLink,.authorLink{
+	font-weight:bold;
+	text-decoration:none;
+}
+
+div.feedContentTitle{
+	font-weight:bold;
+	padding-bottom:10px;
+}
+
+div#feedContainer{
+	padding:0px;
+}
+
+img.authorThumb{
+	max-height:30px;
+}
+
+div.feedAuthor,div.feedComment,div.newComment{
+	min-height:30px;
+	background-color:#eff7fa;
+}
+
+div.feedComment, div.newComment{
+	border-top:1px solid #dde4ea;
+}
+
+a[class*='authorThumbLink_']{
+	float:left;
+	margin-right:10px;
+}
+
+.feedAuthor p, .feedComment p, .newComment p{
+	margin:0 0 0 40px;
+}
+
+div#pinnedImagePreview{
+	float:left;
+}
+
+div#pinForm{
+	margin-left:1em;
+	float:left;
+}
+
+#pinForm input, #pinForm textarea{
+	width:100%;
+}
+
+#pinForm textarea{
+	height:75px;
+}
+
+.newComment textarea{
+	margin:0;
+	width: 153px;
+	height: 25px;
+}
+
+p.newCommentButtonP{
+	margin-top:10px;
+	text-align:right;
+}
+
+.timeStamp{
+	font-size: .8em;
+	color: #666666;
+}
+
+.toggleLike,.likes{
+	font-size: .9em;
+	color: #666666;
+}
+
+div#footer{
+	text-align:center;
+}
+
+</style>
+
+<div id="feedContainer">
+<div class="feedItem">
+<div class="bmInstall">
+<h1>Install the Bookmarklet</h1>
+<p>
+Drag the link below to your bookmark bar to pin external sites and images to Chatter!
+</p>
+<a href="javascript:imgList='<a href=\'{!baseURL}/apex/ChatterColumns?pinnedImageSourceURL='+encodeURIComponent(document.URL)+'\'>Pin this page to Chatter</a><br>Or<br>Click an image below to pin it to Chatter!<br>';for (x=0;x<document.images.length;x++){imgList+='<a href=\'{!baseURL}/apex/ChatterColumns?pinnedImageURL='+encodeURIComponent(document.images[x].src)+'&amp;pinnedImageSourceURL='+encodeURIComponent(document.URL)+'\'><img src='+document.images[x].src+'></a><br>'};if(imgList!=''){document.write('<center>'+imgList+'</center>');void(document.close())}else{alert('No images!')}" class="bmInstallLink">Pin to Chatter</a>
+</div>
+</div>
+</div>
+<div id="footer"><a id="showOlder" href="javascript:getFeed('old')">Show Older News Feed Items</a></div>
+<div id="pinDialog" style="display:none;" title="Your Chatter Pin">
+<div id="pinSourceInfo"></div>
+<div id="pinnedImagePreview"></div>
+<div id="pinForm">
+Name your Pin.<br/>
+<input id="pinTitle" type="text"/><br/>
+Say something about your Pin.<br/>
+<textarea id="pinBody"></textarea>
+</div>
+</div>
+
+</apex:page>
