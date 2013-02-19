@@ -3,7 +3,7 @@
         #main{
             border: 2px solid gray;
             border-radius: 10px;
-            padding: 20px 5%;
+            padding: 0px 5%;
         }
         #main h1{
             font-size: 18px;
@@ -21,8 +21,8 @@
         }
         #main .objectsList{
             width: 45%;
-            border: 1px solid gray;
-            border-radius: 10px;
+            border: 1px solid #EEE;
+            border-radius: 3px;
             padding: 10px 0 10px 10px;
         }
         
@@ -112,58 +112,98 @@
             padding: 5px;
             border-radius: 5px;
         }
+        #main .titleBar{
+            display: block;
+            margin-bottom: 10px;
+            background: #a7c7dc; /* Old browsers */
+            background: -moz-linear-gradient(top,  #a7c7dc 0%, #85b2d3 100%); /* FF3.6+ */
+            background: -webkit-gradient(linear, left top, left bottom, color-stop(0%,#a7c7dc), color-stop(100%,#85b2d3)); /* Chrome,Safari4+ */
+            background: -webkit-linear-gradient(top,  #a7c7dc 0%,#85b2d3 100%); /* Chrome10+,Safari5.1+ */
+            background: -o-linear-gradient(top,  #a7c7dc 0%,#85b2d3 100%); /* Opera 11.10+ */
+            background: -ms-linear-gradient(top,  #a7c7dc 0%,#85b2d3 100%); /* IE10+ */
+            background: linear-gradient(to bottom,  #a7c7dc 0%,#85b2d3 100%); /* W3C */
+            filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#a7c7dc', endColorstr='#85b2d3',GradientType=0 ); /* IE6-9 */
+            padding: 10px;
+        }
+        #main .componentHolder{
+            margin-top: 25px;
+            margin-bottom: 15px;            
+        }
+        #main .quickButton{
+            width: 200px;
+            height: 30px;
+            margin-right: 10px;
+        }
     </style>
     
     <div id="main">
-        <h1>Delete Chatter Tracked Changes</h1> <br /><br />
-        <apex:form >
-            <div class="objectsList left">
+        <div class="componentHolder" id="quickButtons">
+            <span class="titleBar">Quick Delete</span>
+            <apex:form >
                 <div class="header">
-                    Click on the object of the tracked change to delete.
-                    <span class="allButton"><apex:commandButton reRender="objOrigPanel, objDeletePanel" value="Move all to delete list" action="{!deleteAllFeedTrack}" /></span>
+                    <p>
+                    Delete All - deletes ALL tracked feed: feed created by special events as well as feed created by field changes. <br />
+                    Delete Special Events Track - deletes feed that are generated on events that are not related to an individual field (creation, etc).  <br />
+                    Delete Tracked Changes - deletes feed that are generated from changes in field values. <br />
+                    </p>
                 </div>
-                <apex:outputPanel id="objOrigPanel" layout="block" style="margin-top: 40px;">
-                    <apex:repeat value="{!objList}" var="list">
-                            <apex:commandLink reRender="objOrigPanel, objDeletePanel" action="{!addToObjectsToDelete}">
-                                <apex:param assignTo="{!chosenObject}" name="objToDel" value="{!list.objName}" />
-                                <span class="objectDiv left undeletedColor">{!list.name}</span>
-                            </apex:commandLink>
-                    </apex:repeat>        
-                </apex:outputPanel>
-            </div>
-
-            <div class="objectsList right">
-                <div class="header">
-                    Object Tracked Changes to delete: 
-                    <span class="allButton"><apex:commandButton reRender="objOrigPanel, objDeletePanel" value="Cancel all" action="{!cancelAllFeedTrack}" /></span>                
-                </div>
-                    <apex:outputPanel id="objDeletePanel">
-                            <apex:repeat value="{!objectsToDelete}" var="list">
-                                <apex:commandLink reRender="objOrigPanel, objDeletePanel" action="{!removeFromObjectsToDelete}">
-                                    <apex:param assignTo="{!chosenObject}" name="objToRet" value="{!list.objName}" />
-                                    <span class="objectDiv left deletedColor">{!list.name}</span>
+                <apex:commandButton reRender="messageText" action="{!quickDeleteAll}" value="Delete All" styleClass="quickButton"/>
+                <apex:commandButton reRender="messageText" action="{!quickDeleteSpecial}" value="Delete Special Events Track" styleClass="quickButton"/>
+                <apex:commandButton reRender="messageText" action="{!quickDeleteTrackedChange}" value="Delete Tracked Changes" styleClass="quickButton"/>
+                <br /><br /><apex:outputText value="{!message}" id="messageText"/>
+            </apex:form>            
+        </div>
+        <div id="trackedChangeDiv" class="componentHolder">
+            <span class="titleBar">Delete by Object (Tracked Changes)</span>
+            <apex:form >
+                <div class="objectsList left">
+                    <div class="header">
+                        Click on the object of the tracked change to delete.
+                        <span class="allButton"><apex:commandButton reRender="objOrigPanel, objDeletePanel" value="Move all to delete list" action="{!deleteAllFeedTrack}" /></span>
+                    </div>
+                    <apex:outputPanel id="objOrigPanel" layout="block" style="margin-top: 40px;">
+                        <apex:repeat value="{!objList}" var="list">
+                                <apex:commandLink reRender="objOrigPanel, objDeletePanel" action="{!addToObjectsToDelete}">
+                                    <apex:param assignTo="{!chosenObject}" name="objToDel" value="{!list.objName}" />
+                                    <span class="objectDiv left undeletedColor">{!list.name}</span>
                                 </apex:commandLink>
-                            </apex:repeat>
-                            <div class="clear"></div>
-                            <div><apex:commandButton reRender="objOrigPanel, objDeletePanel, deleteResults" value="Delete" action="{!deleteFeedTrack}" style="height: 30px; width: 115px; margin-top: 20px;" rendered="{!if(objectsToDelete.size==0, false, true)}"/></div>
+                        </apex:repeat>        
                     </apex:outputPanel>
-            </div>
-            <div class="clear"></div>
-
-            <apex:outputPanel id="deleteResults" layout="block" styleClass="deleteResults">
-                <apex:outputText rendered="{!if(deleteResultsOk.size>0, true, false)}" value="Successfully deleted:" styleClass="bold"/><br /><br />                    
-                <apex:repeat value="{!deleteResultsOk}" var="list">
-                        <apex:outputText value=" {!list.name}" styleClass="deleteResultObj deletedColor"/>
-                </apex:repeat>
+                </div>
+    
+                <div class="objectsList right">
+                    <div class="header">
+                        Object Tracked Changes to delete: 
+                        <span class="allButton"><apex:commandButton reRender="objOrigPanel, objDeletePanel" value="Cancel all" action="{!cancelAllFeedTrack}" /></span>                
+                    </div>
+                        <apex:outputPanel id="objDeletePanel">
+                                <apex:repeat value="{!objectsToDelete}" var="list">
+                                    <apex:commandLink reRender="objOrigPanel, objDeletePanel" action="{!removeFromObjectsToDelete}">
+                                        <apex:param assignTo="{!chosenObject}" name="objToRet" value="{!list.objName}" />
+                                        <span class="objectDiv left deletedColor">{!list.name}</span>
+                                    </apex:commandLink>
+                                </apex:repeat>
+                                <div class="clear"></div>
+                                <div><apex:commandButton reRender="objOrigPanel, objDeletePanel, deleteResults" value="Delete" action="{!deleteFeedTrack}" style="height: 30px; width: 115px; margin-top: 20px;" rendered="{!if(objectsToDelete.size==0, false, true)}"/></div>
+                        </apex:outputPanel>
+                </div>
                 <div class="clear"></div>
-                <br /><br /><br />
-                <apex:outputText rendered="{!if(deleteResultsFail.size>0, true, false)}" value="Delete failed:" styleClass="bold" /><br /><br />
-                <apex:repeat value="{!deleteResultsFail}" var="list">
-                        <apex:outputText value=" {!list.name}" styleClass="deleteResultObj undeletedColor"/>
-                 </apex:repeat>
-                <div class="clear"></div>
-            </apex:outputPanel>
-        </apex:form>
+    
+                <apex:outputPanel id="deleteResults" layout="block" styleClass="deleteResults">
+                    <apex:outputText rendered="{!if(deleteResultsOk.size>0, true, false)}" value="Successfully deleted:" styleClass="bold"/><br /><br />                    
+                    <apex:repeat value="{!deleteResultsOk}" var="list">
+                            <apex:outputText value=" {!list.name}" styleClass="deleteResultObj deletedColor"/>
+                    </apex:repeat>
+                    <div class="clear"></div>
+                    <br /><br /><br />
+                    <apex:outputText rendered="{!if(deleteResultsFail.size>0, true, false)}" value="Delete failed:" styleClass="bold" /><br /><br />
+                    <apex:repeat value="{!deleteResultsFail}" var="list">
+                            <apex:outputText value=" {!list.name}" styleClass="deleteResultObj undeletedColor"/>
+                     </apex:repeat>
+                    <div class="clear"></div>
+                </apex:outputPanel>
+            </apex:form>
+        </div>
     </div>
 
 </apex:page>

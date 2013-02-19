@@ -8,7 +8,8 @@ public class ChatterTrackedChange{
     public List<FeedEnabledObj> deleteResultsFail{get; set;}
 
     public String chosenObject{get; set;}
-        
+    public String message{get; set;}
+    
     public ChatterTrackedChange(){
         objectsToDeleteMap = new Map<String, FeedEnabledObj>();
         objectsToDelete = objectsToDeleteMap.values();
@@ -78,7 +79,7 @@ public class ChatterTrackedChange{
 
     /** call this when delete ALL is clicked **/
     public PageReference deleteAllFeedTrack(){
-        transferAllToDeleteList();    
+        transferAllToDeleteList();
         return null;
     }
 
@@ -88,6 +89,46 @@ public class ChatterTrackedChange{
         return null;
     }
 
+    /** call this when Quick Delete All is clicked **/
+    public PageReference quickDeleteAll(){
+        message = '';
+        if(deleteSpecialFeedTrack()){
+            message = 'Special feed tracks deleted.';        
+        }else{
+            message = 'An error occured. \n' + message;
+        }
+
+        if(deleteTrackedChangeFromFeedItem()){
+            message = message + '\nFeed track changes deleted.';        
+        }else{
+            message = 'An error occured. \n' + message;
+        }
+
+        return null;
+    }
+
+    /** call this when Quick Delete Special Events Track is clicked **/
+    public PageReference quickDeleteSpecial(){
+        message = '';
+        if(deleteSpecialFeedTrack()){
+            message = 'Special feed tracks deleted.';        
+        }else{
+            message = 'An error occured. \n' + message;
+        }
+        return null;
+    }
+
+    /** call this when Quick Delete Tracked Changes is clicked **/
+    public PageReference quickDeleteTrackedChange(){
+        message = '';
+        if(deleteTrackedChangeFromFeedItem()){
+            message = 'Feed track changes deleted.';        
+        }else{
+            message = 'An error occured. \n' + message;
+        }
+        return null;
+    }
+    
     /** delete chosen objects **/    
     public PageReference deleteFeedTrack(){
         deleteResultsOk = new List<FeedEnabledObj>();
@@ -114,6 +155,28 @@ public class ChatterTrackedChange{
             Database.delete(Database.query(queryString));
             return true;
         }catch(Exception e){
+            return false;
+        }
+    }
+
+    public boolean deleteSpecialFeedTrack(){
+        String queryString = 'SELECT ID FROM FeedItem WHERE Type=\'BasicTemplateFeedItem\'';
+        try{
+            Database.delete(Database.query(queryString));
+            return true;
+        }catch(Exception e){
+            message = String.valueOf(e);
+            return false;
+        }
+    }
+
+    public boolean deleteTrackedChangeFromFeedItem(){
+        String queryString = 'SELECT ID FROM FeedItem WHERE Type=\'TrackedChange\'';
+        try{
+            Database.delete(Database.query(queryString));
+            return true;
+        }catch(Exception e){
+            message = String.valueOf(e);
             return false;
         }
     }
@@ -176,6 +239,17 @@ public class ChatterTrackedChange{
         ctc.cancelAllFeedTrack();
         System.assertEquals(ctc.objectsToDelete.size(), 0);
         System.assertEquals(ctc.objList.size(), nAllObjects);
+        
+        //test quick links
+        //Quick delete all
+        ctc.quickDeleteAll();
+        
+        //Quick delete special events
+        ctc.quickDeleteSpecial();
+        
+        //Quick delete tracked changes
+        ctc.quickDeleteTrackedChange();
+
     }
     
  
