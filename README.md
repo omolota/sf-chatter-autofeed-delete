@@ -1,3 +1,9 @@
+<<<<<<< HEAD
+=======
+sf-chatter-autofeed-delete
+==========================
+
+>>>>>>> 0e5580cbd9d83b9c48eb7a40f9ebf4cdafb384d3
 This is Visualforce tool for deleting the Chatter tracked changes. These are feeds generated automatically when changing a chatter-enabled object.
 Tracked changes with user interaction (comments, likes) will not be deleted.
 
